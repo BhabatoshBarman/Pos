@@ -308,7 +308,7 @@
   // ================= Global state =================
   let total = 0;
   let today = new Date();
-  let todayStr = today.toISOString().split('T')[0]; // yyyy-mm-dd
+  let todayStr = getTodayStr();
   let billNo = 0; // current shown bill no
   let products = []; // {id, name, price, order}
   let qr = null;
@@ -625,6 +625,14 @@
     await showReportData(items, `${from} থেকে ${to} রিপোর্ট`);
   }
   window.showRangeReport = showRangeReport;
+
+  function getTodayStr() {
+  let d = new Date();
+  let day = String(d.getDate()).padStart(2, "0");
+  let month = String(d.getMonth() + 1).padStart(2, "0");
+  let year = d.getFullYear();
+  return `${day}/${month}/${year}`; // dd/mm/yyyy
+}
 
   // ================= Initialize UI =================
   async function init() {
