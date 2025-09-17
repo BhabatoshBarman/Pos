@@ -599,12 +599,16 @@
       html += `<p><b>Total Sale: ₹${totalSale}</b></p>`;
       html += "<table border='1' width='100%' style='border-collapse:collapse;'><tr><th>Date</th><th>Bill No</th><th>Amount</th></tr>";
       data.forEach(h => {
-        html += `<tr><td>${formatDate(new Date(h.date))}</td><td>${h.billNo}</td><td>₹${h.amount}</td></tr>`;
+        html += `<tr><td>${h.date}</td><td>${h.billNo}</td><td>₹${h.amount}</td></tr>`;
       });
       html += "</table>";
     }
     result.innerHTML = html;
   }
+  function parseDDMMYYYY(str) {
+  const [day, month, year] = str.split("/").map(Number);
+  return new Date(year, month - 1, day);
+}
 
   async function showTodayReport() {
     const col = collection(db, "salesHistory");
@@ -616,14 +620,24 @@
   window.showTodayReport = showTodayReport;
 
   async function showRangeReport() {
-    let from = document.getElementById("fromDate").value;
-    let to = document.getElementById("toDate").value;
-    if (!from || !to) { alert("তারিখ দিন"); return; }
-    const col = collection(db, "salesHistory");
-    const snap = await getDocs(col);
-    const items = snap.docs.map(d => d.data()).filter(x => x.date >= from && x.date <= to);
-    await showReportData(items, `${from} থেকে ${to} রিপোর্ট`);
-  }
+  let from = document.getElementById("fromDate").value;
+  let to = document.getElementById("toDate").value;
+  if (!from || !to) { alert("তারিখ দিন"); return; }
+
+  const fromDate = new Date(from); // yyyy-mm-dd → Date
+  const toDate = new Date(to);
+
+  const col = collection(db, "salesHistory");
+  const snap = await getDocs(col);
+
+  const items = snap.docs.map(d => d.data()).filter(x => {
+    const d = parseDDMMYYYY(x.date); // dd/mm/yyyy → Date
+    return d >= fromDate && d <= toDate;
+  });
+
+  await showReportData(items, `${from} থেকে ${to} রিপোর্ট`);
+}
+
   window.showRangeReport = showRangeReport;
 
   function getTodayStr() {
