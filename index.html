@@ -18,15 +18,17 @@
     }
     header h2 {
       margin: 0;
-      font-size: 18px;
+      font-size: 26px;
+      font-weight: bold;
     }
     header p {
+      font-weight: bold;
       margin: 2px 0;
-      font-size: 13px;
+      font-size: 16px;
     }
     hr {
       border: none;
-      border-top: 1px dashed #555;
+      border-top: 2px dashed #000000;
       margin: 5px 0;
     }
 
@@ -98,22 +100,25 @@
       width: 100%;
       border-collapse: collapse;
       margin-top: 8px;
-      font-size: 13px;
+      font-size: 16px;
+      border-bottom: 1px dashed #000000;
     }
     th, td {
-      border-bottom: 1px dashed #aaa;
+      
       padding: 6px;
       text-align: center;
     }
     th {
-      font-size: 14px;
-      background: #f3f3f3;
+      font-size: 20px;
+      background: #c5c5c5;
+      border-bottom: 1px dashed #000000;
+      font-weight: bold;
     }
     #grandTotal {
       text-align: right;
       margin-top: 8px;
       font-weight: bold;
-      font-size: 15px;
+      font-size: 18px;
     }
 
     .upi-payment {
@@ -124,9 +129,17 @@
       margin: auto;
       margin-top: 6px;
     }
+    footer h3 {
+      font-size: 13px;
+      line-height: 5px;
+    }
     footer p {
-      font-size: 12px;
-      margin: 3px 0;
+      font-size: 13px;
+      line-height: 0px;
+    }
+    footer h6 {
+      font-size: 5px;
+      line-height: 120px;
     }
 
     /* Modals */
@@ -156,19 +169,33 @@
       cursor: pointer;
     }
 
-    @media print {
-      button, select, input, .settings-container {
-        display: none !important;
-      }
-      @page {
-        size: 58mm auto;
-        margin: 3mm;
-      }
-      body {
-        background: #fff;
-        font-size: 12px;
-      }
+    /* Print Styles */
+  @media print {
+    .controls,
+    .controls label,
+    .settings-container,
+    button {
+      display: none !important;
     }
+    @page {
+      size: 58mm auto;   /* Thermal printer width */
+      margin: 1mm;       /* মার্জিন একদম কম */
+    }
+    body {
+      background: #fff;
+      font-size: 18px;   /* লেখা বড় */
+      line-height: 1.4;  /* স্পষ্ট */
+      margin: 0;
+      padding: 0;
+    }
+    table th, table td {
+      font-size: 16px;
+      padding: 2px;
+    }
+    footer {
+      margin-bottom: 20mm; /* footer এর নিচে ফাঁকা জায়গা */
+    }
+  }
   </style>
 </head>
 <body>
@@ -209,10 +236,10 @@
   <!-- Bill table -->
   <table id="bill">
     <tr>
-      <th>Item</th>
-      <th>Qty</th>
-      <th>Rate</th>
-      <th>Total</th>
+      <th>ITEM</th>
+      <th>QTY</th>
+      <th>RATE</th>
+      <th>TOTAL</th>
     </tr>
   </table>
 
@@ -229,8 +256,10 @@
 
   <footer>
     <hr>
-    <p>🙏 ধন্যবাদ, আবার আসবেন 🙏</p>
+    <h3>🙏 ধন্যবাদ, আবার আসবেন 🙏</h3>
     <p>© 2025 বিরিয়ানি Adda</p>
+    <h6>✯</h6>
+
   </footer>
 
   <!-- Product Modal -->
