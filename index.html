@@ -5,32 +5,197 @@
   <title>POS Bill - বিরিয়ানি Adda</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body { font-family: "Noto Sans Bengali","Segoe UI",Arial,sans-serif; margin:0; padding:10px; font-size:14px; color:#000; background:#fdfdfd; }
-    header, footer { text-align:center; }
-    header h2 { margin:0; font-size:18px; }
-    header p { margin:2px 0; font-size:13px; }
-    hr { border:none; border-top:1px dashed #555; margin:5px 0; }
-    .settings-container { position:absolute; top:10px; right:15px; }
-    .settings-btn { background:none; border:none; font-size:22px; cursor:pointer; }
-    .dropdown { display:none; position:absolute; right:0; margin-top:5px; background:#fff; border:1px solid #ccc; border-radius:6px; box-shadow:0 2px 6px rgba(0,0,0,0.15); z-index:100; }
-    .dropdown a { display:block; padding:8px 12px; text-decoration:none; color:#000; font-size:14px; }
-    .dropdown a:hover { background:#f1f1f1; }
-    .controls { display:flex; flex-wrap:wrap; gap:8px; margin:10px 0; align-items:center; }
-    select, input { padding:5px; font-size:14px; border:1px solid #ccc; border-radius:5px; min-width:100px; }
-    button { background:#008e18; color:white; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; font-size:14px; }
-    button:active { background:#007314; }
-    table { width:100%; border-collapse:collapse; margin-top:8px; font-size:13px; }
-    th, td { border-bottom:1px dashed #aaa; padding:6px; text-align:center; }
-    th { font-size:14px; background:#f3f3f3; }
-    #grandTotal { text-align:right; margin-top:8px; font-weight:bold; font-size:15px; }
-    .upi-payment { text-align:center; margin-top:12px; }
-    #upiQR { margin:auto; margin-top:6px; }
-    footer p { font-size:12px; margin:3px 0; }
-    .modal { display:none; position:fixed; z-index:200; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5); }
-    .modal-content { background:#fff; margin:10% auto; padding:15px; border-radius:8px; width:90%; max-width:400px; }
-    .modal-header { font-weight:bold; margin-bottom:10px; }
-    .close { float:right; font-size:18px; cursor:pointer; }
-    @media print { button, select, input, .settings-container { display:none !important; } @page { size:58mm auto; margin:3mm; } body { background:#fff; font-size:12px; } }
+    body {
+      font-family: "Noto Sans Bengali", "Segoe UI", Arial, sans-serif;
+      margin: 0;
+      padding: 10px;
+      font-size: 14px;
+      color: #000;
+      background: #fdfdfd;
+    }
+    header, footer {
+      text-align: center;
+    }
+    header h2 {
+      margin: 0;
+      font-size: 26px;
+      font-weight: bold;
+    }
+    header p {
+      font-weight: bold;
+      margin: 2px 0;
+      font-size: 16px;
+    }
+    hr {
+      border: none;
+      border-top: 2px dashed #000000;
+      margin: 5px 0;
+    }
+
+    /* Settings */
+    .settings-container {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+    }
+    .settings-btn {
+      background: none;
+      border: none;
+      font-size: 22px;
+      cursor: pointer;
+    }
+    .dropdown {
+      display: none;
+      position: absolute;
+      right: 0;
+      margin-top: 5px;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      z-index: 100;
+    }
+    .dropdown a {
+      display: block;
+      padding: 8px 12px;
+      text-decoration: none;
+      color: #000;
+      font-size: 14px;
+    }
+    .dropdown a:hover {
+      background: #f1f1f1;
+    }
+
+    /* Controls */
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 10px 0;
+      align-items: center;
+      justify-content: center;
+    }
+    select, input {
+      padding: 5px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      min-width: 100px;
+    }
+    button {
+      background: #008e18;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:active {
+      background: #007314;
+    }
+
+    /* Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      font-size: 16px;
+      border-bottom: 1px dashed #000000;
+    }
+    th, td {
+      
+      padding: 6px;
+      text-align: center;
+    }
+    th {
+      font-size: 20px;
+      background: #c5c5c5;
+      border-bottom: 1px dashed #000000;
+      font-weight: bold;
+    }
+    #grandTotal {
+      text-align: right;
+      margin-top: 8px;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .upi-payment {
+      text-align: center;
+      margin-top: 12px;
+    }
+    #upiQR {
+      margin: auto;
+      margin-top: 6px;
+    }
+    footer h3 {
+      font-size: 13px;
+      line-height: 5px;
+    }
+    footer p {
+      font-size: 13px;
+      line-height: 0px;
+    }
+    footer h6 {
+      font-size: 5px;
+      line-height: 120px;
+    }
+
+    /* Modals */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 200;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+    }
+    .modal-content {
+      background: #fff;
+      margin: 10% auto;
+      padding: 15px;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 400px;
+    }
+    .modal-header {
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .close {
+      float: right;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    /* Print Styles */
+  @media print {
+    .controls,
+    .controls label,
+    .settings-container,
+    button {
+      display: none !important;
+    }
+    @page {
+      size: 58mm auto;   /* Thermal printer width */
+      margin: 1mm;       /* মার্জিন একদম কম */
+    }
+    body {
+      background: #fff;
+      font-size: 18px;   /* লেখা বড় */
+      line-height: 1.4;  /* স্পষ্ট */
+      margin: 0;
+      padding: 0;
+    }
+    table th, table td {
+      font-size: 16px;
+      padding: 2px;
+    }
+    footer {
+      margin-bottom: 20mm; /* footer এর নিচে ফাঁকা জায়গা */
+    }
+  }
   </style>
 </head>
 <body>
@@ -45,14 +210,17 @@
 
   <header>
     <h2>🍴 বিরিয়ানি Adda 🍴</h2>
-    <p>Near Bhatri Club, Gangarampur</p>
+    <p>Near Youth Club, Gangarampur</p>
     <p>☎ +91 9064899089 / +91 8759208612 ☎</p>
     <p>Date: <span id="billDate"></span> | Bill No: <span id="billNo"></span></p>
     <hr>
   </header>
 
-  <!-- Qty Selector -->
+  <!-- Controls -->
   <div class="controls">
+    <label>Item:
+      <select id="item"></select>
+    </label>
     <label>Qty:
       <select id="qty">
         <option value="1">1</option><option value="2">2</option>
@@ -62,20 +230,16 @@
         <option value="9">9</option><option value="10">10</option>
       </select>
     </label>
-  </div>
-
-  <!-- Product Menu Buttons -->
-  <div id="menuContainer" class="controls" style="flex-wrap:wrap; justify-content:flex-start;">
-    <!-- JS দিয়ে বাটন আসবে -->
+    <button onclick="addItem()">➕ Add</button>
   </div>
 
   <!-- Bill table -->
   <table id="bill">
     <tr>
-      <th>Item</th>
-      <th>Qty</th>
-      <th>Rate</th>
-      <th>Total</th>
+      <th>ITEM</th>
+      <th>QTY</th>
+      <th>RATE</th>
+      <th>TOTAL</th>
     </tr>
   </table>
 
@@ -92,8 +256,10 @@
 
   <footer>
     <hr>
-    <p>🙏 ধন্যবাদ, আবার আসবেন 🙏</p>
+    <h3>🙏 ধন্যবাদ, আবার আসবেন 🙏</h3>
     <p>© 2025 বিরিয়ানি Adda</p>
+    <h6>✯</h6>
+
   </footer>
 
   <!-- Product Modal -->
@@ -107,132 +273,270 @@
       <hr>
       <label>Remove Product:</label>
       <select id="removeProduct"></select>
-      <button onclick="removeProduct()">❌ Remove</button>
+        <button onclick="removeProduct()">❌ Remove</button>
+        <button onclick="moveProductUp()">⬆️ Up</button>
+        <button onclick="moveProductDown()">⬇️ Down</button>
+
     </div>
   </div>
 
   <!-- Report Modal -->
-  <div id="reportModal" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="closeModal('reportModal')">&times;</span>
-      <div class="modal-header">📊 Sales Report</div>
-      <button onclick="showTodayReport()">আজকের রিপোর্ট</button><br><br>
-      From: <input type="date" id="fromDate">
-      To: <input type="date" id="toDate">
-      <button onclick="showRangeReport()">Search</button>
-      <div id="reportResult" style="margin-top:10px; max-height:200px; overflow:auto;"></div>
-    </div>
+<div id="reportModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('reportModal')">&times;</span>
+    <div class="modal-header">📊 Sales Report</div>
+
+    <button onclick="showTodayReport()">আজকের রিপোর্ট</button><br><br>
+
+    From: <input type="date" id="fromDate">
+    To: <input type="date" id="toDate">
+    <button onclick="showRangeReport()">Search</button>
+
+    <div id="reportResult" style="margin-top:10px; max-height:200px; overflow:auto;"></div>
   </div>
+</div>
+
 
   <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.9.2/lib/qr-code-styling.js"></script>
+<!-- include QR library (non-module) -->
+<script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.9.2/lib/qr-code-styling.js"></script>
 
-  <script>
-  // Firebase config (dummy values, replace with real)
+<!-- Firebase + POS logic (module) -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import {
+    getFirestore,
+    collection,
+    getDocs,
+    addDoc,
+    deleteDoc,
+    query,
+    where,
+    orderBy,
+    doc,
+    getDoc,
+    setDoc,
+    updateDoc
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  // ================= Firebase Config (posbill-739d8) =================
   const firebaseConfig = {
-    apiKey: "AIzaSyDpXWvmtI_wIOXueQadSWS6cJA8nbqqPWA",
-    authDomain: "biryani-ada-pos-bill.firebaseapp.com",
-    projectId: "biryani-ada-pos-bill",
-    storageBucket: "biryani-ada-pos-bill.firebasestorage.app",
-    messagingSenderId: "397191320972",
-    appId: "1:397191320972:web:570a8769d545fa229772a9",
-    measurementId: "G-CPRT2R6HCQ"
+    apiKey: "AIzaSyD3zbH7JIe6iXg9mxy7YVhoeVTPPQ3B5Ng",
+    authDomain: "posbill-739d8.firebaseapp.com",
+    projectId: "posbill-739d8",
+    storageBucket: "posbill-739d8.firebasestorage.app",
+    messagingSenderId: "669486423182",
+    appId: "1:669486423182:web:90b10e03860fa2ba4efddf",
+    measurementId: "G-J8TXDBBEZ8"
   };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
 
+  // Initialize Firebase & Firestore
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // ================= Global state =================
   let total = 0;
   let today = new Date();
-  let todayStr = today.toISOString().split('T')[0];
-  let billNo = 0;
-  let qr;
+  let todayStr = getTodayStr();
+  let billNo = 0; // current shown bill no
+  let products = []; // {id, name, price, order}
+  let qr = null;
 
-  // Default products
-  let products = [
-    {name:"চিকেন বিরিয়ানি", price:90},
-    {name:"জলের বোতল", price:10},
-    {name:"ভেজ চাউমিন", price:40},
-    {name:"এগ চাউমিন", price:50},
-    {name:"চিকেন চাউমিন", price:70},
-    {name:"এগ রোল", price:30},
-    {name:"চিকেন রোল", price:50},
-    {name:"স্প্রাইট বোতল ২০ml", price:20}
-  ];
+  // Utility
+  function formatBillNo(num) { return String(num).padStart(3, '0'); }
+  function formatDate(date) {
+    let d = String(date.getDate()).padStart(2, '0');
+    let m = String(date.getMonth() + 1).padStart(2, '0');
+    let y = date.getFullYear();
+    return `${d}/${m}/${y}`;
+  }
 
-  // Load product buttons
-  function loadProducts() {
-    let menuDiv = document.getElementById("menuContainer");
-    let removeSelect = document.getElementById("removeProduct");
-    menuDiv.innerHTML = "";
+  // Expose UI modal/menu helpers (so existing HTML onclick works)
+  function openModal(id) { document.getElementById(id).style.display = "block"; }
+  function closeModal(id) { document.getElementById(id).style.display = "none"; }
+  function toggleDropdown() {
+    let menu = document.getElementById("settingsMenu");
+    menu.style.display = menu.style.display === "block" ? "none" : "block";
+  }
+  // attach to window for HTML attribute calls
+  window.openModal = openModal;
+  window.closeModal = closeModal;
+  window.toggleDropdown = toggleDropdown;
+
+  // ================= QR handling =================
+  function updateQR() {
+    const upiId = "9064899089@ptaxis";
+    const payeeName = "Biryani Adda";
+    const upiLink = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(payeeName)}&am=${total}`;
+    const container = document.getElementById("upiQR");
+    if (!container) return;
+    if (!qr) {
+      qr = new QRCodeStyling({
+        width: 120,
+        height: 120,
+        data: upiLink,
+        margin: 0
+      });
+      // clear existing children then append
+      container.innerHTML = "";
+      qr.append(container);
+    } else {
+      qr.update({ data: upiLink });
+    }
+  }
+
+  // ================= Products =================
+  async function ensureDefaultProductsIfEmpty() {
+    const col = collection(db, "products");
+    const snap = await getDocs(col);
+    if (snap.empty) {
+      const defaults = [
+        { name: "চিকেন বিরিয়ানি", price: 90 },
+        { name: "জলের বোতল", price: 10 },
+        { name: "ভেজ চাউমিন", price: 40 },
+        { name: "এগ চাউমিন", price: 50 },
+        { name: "চিকেন চাউমিন", price: 70 },
+        { name: "এগ রোল", price: 30 },
+        { name: "চিকেন রোল", price: 50 },
+        { name: "স্প্রাইট বোতল ২০ml", price: 20 }
+      ];
+      // write with order indices
+      for (let i = 0; i < defaults.length; i++) {
+        await addDoc(col, { ...defaults[i], order: i });
+      }
+    }
+  }
+
+  async function loadProducts() {
+    await ensureDefaultProductsIfEmpty();
+    const col = collection(db, "products");
+    const q = query(col, orderBy("order", "asc"));
+    const snap = await getDocs(q);
+    products = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    // populate selects
+    const itemSelect = document.getElementById("item");
+    const removeSelect = document.getElementById("removeProduct");
+    if (!itemSelect || !removeSelect) return;
+    itemSelect.innerHTML = "";
     removeSelect.innerHTML = "";
-
     products.forEach(p => {
-      // Menu button
-      let btn = document.createElement("button");
-      btn.textContent = `${p.name} (₹${p.price})`;
-      btn.onclick = () => addMenuItem(p.name, p.price);
-      menuDiv.appendChild(btn);
+      let opt = document.createElement("option");
+      opt.value = p.name;
+      opt.setAttribute("data-price", p.price);
+      opt.textContent = `${p.name} - ₹${p.price}`;
+      itemSelect.appendChild(opt);
 
-      // Remove option
       let opt2 = document.createElement("option");
-      opt2.value = p.name; opt2.textContent = p.name;
+      opt2.value = p.name;
+      opt2.textContent = p.name;
       removeSelect.appendChild(opt2);
     });
   }
 
-  function addNewProduct(){
+  async function addNewProduct() {
     let name = document.getElementById("newProductName").value.trim();
     let price = parseInt(document.getElementById("newProductPrice").value);
-    if(name && price){
-      products.push({name, price});
-      loadProducts();
-      db.collection("products").add({name, price});
-      document.getElementById("newProductName").value = "";
-      document.getElementById("newProductPrice").value = "";
+    if (!name || !price) { alert("নাম ও মূল্য দিন"); return; }
+    // determine max order
+    let maxOrder = -1;
+    products.forEach(p => { if (typeof p.order === "number" && p.order > maxOrder) maxOrder = p.order; });
+    await addDoc(collection(db, "products"), { name, price, order: maxOrder + 1 });
+    document.getElementById("newProductName").value = "";
+    document.getElementById("newProductPrice").value = "";
+    await loadProducts();
+  }
+
+  async function removeProduct() {
+    let name = document.getElementById("removeProduct").value;
+    if (!name) return;
+    const q = query(collection(db, "products"), where("name", "==", name));
+    const snap = await getDocs(q);
+    if (snap.empty) { alert("Product not found"); return; }
+    // delete all matching (usually one)
+    for (let d of snap.docs) {
+      await deleteDoc(doc(db, "products", d.id));
+    }
+    await loadProducts();
+  }
+
+  // Move up/down by swapping 'order' values
+  async function moveProductUp() {
+    let name = document.getElementById("removeProduct").value;
+    let index = products.findIndex(p => p.name === name);
+    if (index > 0) {
+      const a = products[index];
+      const b = products[index - 1];
+      await updateDoc(doc(db, "products", a.id), { order: b.order });
+      await updateDoc(doc(db, "products", b.id), { order: a.order });
+      await loadProducts();
+      document.getElementById("removeProduct").value = name;
     }
   }
 
-  function removeProduct(){
+  async function moveProductDown() {
     let name = document.getElementById("removeProduct").value;
-    products = products.filter(p => p.name !== name);
-    loadProducts();
+    let index = products.findIndex(p => p.name === name);
+    if (index >= 0 && index < products.length - 1) {
+      const a = products[index];
+      const b = products[index + 1];
+      await updateDoc(doc(db, "products", a.id), { order: b.order });
+      await updateDoc(doc(db, "products", b.id), { order: a.order });
+      await loadProducts();
+      document.getElementById("removeProduct").value = name;
+    }
   }
 
-  function openModal(id){ document.getElementById(id).style.display="block"; }
-  function closeModal(id){ document.getElementById(id).style.display="none"; }
-  function toggleDropdown(){ 
-    let menu = document.getElementById("settingsMenu"); 
-    menu.style.display = menu.style.display==="block" ? "none" : "block"; 
+  // expose product functions to window (so html onclick works)
+  window.addNewProduct = addNewProduct;
+  window.removeProduct = removeProduct;
+  window.moveProductUp = moveProductUp;
+  window.moveProductDown = moveProductDown;
+
+  // ================= Bill number counter =================
+  // We'll use a single doc 'counters/billCounter' with fields: lastNumber (int), lastDate (yyyy-mm-dd)
+  const counterDocRef = doc(db, "counters", "billCounter");
+
+  async function loadBillCounter() {
+    try {
+      const snap = await getDoc(counterDocRef);
+      if (!snap.exists()) {
+        // initialize
+        await setDoc(counterDocRef, { lastNumber: 0, lastDate: "" });
+        billNo = 1;
+      } else {
+        const data = snap.data();
+        if (data.lastDate === todayStr) {
+          billNo = data.lastNumber + 1;
+        } else {
+          billNo = 1;
+        }
+      }
+    } catch (e) {
+      console.error("Error loading counter:", e);
+      billNo = 1;
+    }
+    const billNoEl = document.getElementById("billNo");
+    if (billNoEl) billNoEl.innerText = formatBillNo(billNo);
+    const billDateEl = document.getElementById("billDate");
+    if (billDateEl) billDateEl.innerText = formatDate(today);
   }
 
-  function formatBillNo(num){ return String(num).padStart(3,'0'); }
-  function formatDate(date){ return `${String(date.getDate()).padStart(2,'0')}/${String(date.getMonth()+1).padStart(2,'0')}/${date.getFullYear()}`; }
-
-  function initBillNo(){
-    document.getElementById("billNo").innerText = formatBillNo(1);
-    document.getElementById("billDate").innerText = formatDate(today);
+  // update counter after saving a sale
+  async function updateBillCounterAfterSaving(number) {
+    await setDoc(counterDocRef, { lastNumber: number, lastDate: todayStr }, { merge: true });
   }
 
-  // QR update
-  function updateQR(){
-    const upiId = "9064899089@ptaxis";
-    const payeeName = "Biryani Adda";
-    const upiLink = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(payeeName)}&am=${total}`;
-    if(!qr){ 
-      qr = new QRCodeStyling({width:120, height:120, data:upiLink}); 
-      qr.append(document.getElementById("upiQR")); 
-    } else qr.update({data:upiLink});
-  }
+  // ================= Items add & print =================
+  function addItem() {
+    const itemSelect = document.getElementById("item");
+    if (!itemSelect) return;
+    const itemName = itemSelect.value;
+    const price = parseFloat(itemSelect.options[itemSelect.selectedIndex].getAttribute("data-price") || 0);
+    const qty = parseInt(document.getElementById("qty").value || "1");
+    const lineTotal = price * qty;
 
-  // Add item from button
-  function addMenuItem(itemName, price){
-    let qty = parseInt(document.getElementById("qty").value);
-    let lineTotal = price * qty;
-
-    let table = document.getElementById("bill");
-    let row = table.insertRow();
+    const table = document.getElementById("bill");
+    const row = table.insertRow();
     row.insertCell(0).innerText = itemName;
     row.insertCell(1).innerText = qty;
     row.insertCell(2).innerText = price;
@@ -242,64 +546,147 @@
     document.getElementById("grandTotal").innerText = "Grand Total: " + total.toFixed(2) + " ₹";
     updateQR();
   }
+  window.addItem = addItem;
 
-  function printBill(){
+  async function printBill() {
+    // compute fresh bill number from counter before print (in case another device incremented)
+    try {
+      const snap = await getDoc(counterDocRef);
+      if (!snap.exists()) {
+        await setDoc(counterDocRef, { lastNumber: 0, lastDate: "" });
+        billNo = 1;
+      } else {
+        const data = snap.data();
+        if (data.lastDate === todayStr) billNo = data.lastNumber + 1;
+        else billNo = 1;
+      }
+      // show current bill number on UI immediately
+      const billNoEl = document.getElementById("billNo");
+      if (billNoEl) billNoEl.innerText = formatBillNo(billNo);
+
+    } catch (e) {
+      console.error("error getting counter before print:", e);
+    }
+
+    // Trigger print
     window.print();
-    window.onafterprint = () => {
-      // Save bill
-      let billData = {
-        date: todayStr,
-        billNo: formatBillNo(billNo),
-        amount: total
-      };
-      db.collection("bills").add(billData);
 
-      // Reset
-      billNo++;
-      document.getElementById("billNo").innerText = formatBillNo(billNo);
-      document.getElementById("bill").innerHTML = '<tr><th>Item</th><th>Qty</th><th>Rate</th><th>Total</th></tr>';
-      total = 0;
-      document.getElementById("grandTotal").innerText = "Grand Total: 0 ₹";
-      updateQR();
+    // After print: save sale and increment counter
+    window.onafterprint = async () => {
+      try {
+        // collect bill items from table
+        const table = document.getElementById("bill");
+        const rows = Array.from(table.rows).slice(1); // skip header
+        const items = rows.map(r => ({
+          name: r.cells[0].innerText,
+          qty: parseInt(r.cells[1].innerText || "0"),
+          rate: parseFloat(r.cells[2].innerText || "0"),
+          total: parseFloat(r.cells[3].innerText || "0")
+        }));
+
+        // Save sale doc
+        await addDoc(collection(db, "salesHistory"), {
+          date: todayStr,
+          billNo: formatBillNo(billNo),
+          amount: total,
+          items,
+          createdAt: new Date().toISOString()
+        });
+
+        // update counter
+        await updateBillCounterAfterSaving(billNo);
+
+        // prepare for next bill
+        billNo = billNo + 1;
+        const billNoEl = document.getElementById("billNo");
+        if (billNoEl) billNoEl.innerText = formatBillNo(billNo);
+
+        // clear table & totals
+        document.getElementById("bill").innerHTML =
+          '<tr><th>Item</th><th>Qty</th><th>Rate</th><th>Total</th></tr>';
+        total = 0;
+        document.getElementById("grandTotal").innerText = 'Grand Total: 0 ₹';
+        updateQR();
+
+      } catch (e) {
+        console.error("Error saving sale after print:", e);
+        alert("Sale save failed. Check console.");
+      }
     };
   }
+  window.printBill = printBill;
 
-  // Report
-  function showTodayReport(){
-    db.collection("bills").where("date","==",todayStr).get().then(snapshot=>{
-      let data = snapshot.docs.map(doc=>doc.data());
-      showReportData(data,"আজকের রিপোর্ট");
-    });
-  }
-
-  function showRangeReport(){
-    let from = document.getElementById("fromDate").value;
-    let to = document.getElementById("toDate").value;
-    if(!from || !to){ alert("তারিখ দিন"); return; }
-    db.collection("bills").where("date",">=",from).where("date","<=",to).get().then(snapshot=>{
-      let data = snapshot.docs.map(doc=>doc.data());
-      showReportData(data,`${from} থেকে ${to} রিপোর্ট`);
-    });
-  }
-
-  function showReportData(data, title){
+  // ================= Reports =================
+  async function showReportData(data, title) {
     let result = document.getElementById("reportResult");
-    let totalSale = data.reduce((sum, h)=>sum+h.amount, 0);
+    if (!result) return;
+    let totalSale = data.reduce((sum, h) => sum + (h.amount || 0), 0);
     let html = `<h4>${title}</h4>`;
-    if(data.length === 0){ html += "<p>No data found</p>"; }
-    else {
+    if (data.length === 0) {
+      html += "<p>No data found</p>";
+    } else {
       html += `<p><b>Total Sale: ₹${totalSale}</b></p>`;
       html += "<table border='1' width='100%' style='border-collapse:collapse;'><tr><th>Date</th><th>Bill No</th><th>Amount</th></tr>";
-      data.forEach(h=>{ html += `<tr><td>${h.date}</td><td>${h.billNo}</td><td>₹${h.amount}</td></tr>`; });
+      data.forEach(h => {
+        html += `<tr><td>${h.date}</td><td>${h.billNo}</td><td>₹${h.amount}</td></tr>`;
+      });
       html += "</table>";
     }
     result.innerHTML = html;
   }
+  function parseDDMMYYYY(str) {
+  const [day, month, year] = str.split("/").map(Number);
+  return new Date(year, month - 1, day);
+}
 
-  // Init
-  loadProducts();
-  initBillNo();
-  updateQR();
-  </script>
+  async function showTodayReport() {
+    const col = collection(db, "salesHistory");
+    const snap = await getDocs(col);
+    // filter client-side for today (simple approach)
+    const items = snap.docs.map(d => d.data()).filter(x => x.date === todayStr);
+    await showReportData(items, "আজকের রিপোর্ট");
+  }
+  window.showTodayReport = showTodayReport;
+
+  async function showRangeReport() {
+  let from = document.getElementById("fromDate").value;
+  let to = document.getElementById("toDate").value;
+  if (!from || !to) { alert("তারিখ দিন"); return; }
+
+  const fromDate = new Date(from); // yyyy-mm-dd → Date
+  const toDate = new Date(to);
+
+  const col = collection(db, "salesHistory");
+  const snap = await getDocs(col);
+
+  const items = snap.docs.map(d => d.data()).filter(x => {
+    const d = parseDDMMYYYY(x.date); // dd/mm/yyyy → Date
+    return d >= fromDate && d <= toDate;
+  });
+
+  await showReportData(items, `${from} থেকে ${to} রিপোর্ট`);
+}
+
+  window.showRangeReport = showRangeReport;
+
+  function getTodayStr() {
+  let d = new Date();
+  let day = String(d.getDate()).padStart(2, "0");
+  let month = String(d.getMonth() + 1).padStart(2, "0");
+  let year = d.getFullYear();
+  return `${day}/${month}/${year}`; // dd/mm/yyyy
+}
+
+  // ================= Initialize UI =================
+  async function init() {
+    document.getElementById("billDate").innerText = formatDate(today);
+    await loadProducts();
+    await loadBillCounter();
+    updateQR();
+  }
+
+  init();
+
+</script>
 </body>
 </html>
