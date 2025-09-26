@@ -94,6 +94,11 @@
     button:active {
       background: #007314;
     }
+    .controls button {
+        background-color: #f0f0f0;
+        color: #333;
+        border: 1px solid #ccc;
+    }
 
     /* Table */
     table {
@@ -199,7 +204,6 @@
   </style>
 </head>
 <body>
-  <!-- Settings -->
   <div class="settings-container">
     <button class="settings-btn" onclick="toggleDropdown()">⚙️</button>
     <div class="dropdown" id="settingsMenu">
@@ -210,30 +214,16 @@
 
   <header>
     <h2>🍴 বিরিয়ানি Adda 🍴</h2>
-    <p>Near Youth Club, Gangarampur</p>
+    <p>Near Bhatri Club, Gangarampur</p>
     <p>☎ +91 9064899089 / +91 8759208612 ☎</p>
     <p>Date: <span id="billDate"></span> | Bill No: <span id="billNo"></span></p>
     <hr>
   </header>
 
-  <!-- Controls -->
-  <div class="controls">
-    <label>Item:
-      <select id="item"></select>
-    </label>
-    <label>Qty:
-      <select id="qty">
-        <option value="1">1</option><option value="2">2</option>
-        <option value="3">3</option><option value="4">4</option>
-        <option value="5">5</option><option value="6">6</option>
-        <option value="7">7</option><option value="8">8</option>
-        <option value="9">9</option><option value="10">10</option>
-      </select>
-    </label>
-    <button onclick="addItem()">➕ Add</button>
-  </div>
+  <div id="product-buttons" class="controls">
+    </div>
 
-  <!-- Bill table -->
+
   <table id="bill">
     <tr>
       <th>ITEM</th>
@@ -244,11 +234,11 @@
   </table>
 
   <div id="grandTotal">Grand Total: 0 ₹</div>
-  <div style="text-align:center">
+  <div style="text-align:center; margin-top: 10px; display: flex; justify-content: center; gap: 10px;">
     <button onclick="printBill()">🖨️ Print Bill</button>
+    <button onclick="nextBill()" style="background-color: #f44336;">Next Bill ➡️</button>
   </div>
 
-  <!-- UPI QR -->
   <div class="upi-payment">
     <p><b>Pay via UPI</b></p>
     <div id="upiQR"></div>
@@ -262,7 +252,6 @@
 
   </footer>
 
-  <!-- Product Modal -->
   <div id="productModal" class="modal">
     <div class="modal-content">
       <span class="close" onclick="closeModal('productModal')">&times;</span>
@@ -280,8 +269,7 @@
     </div>
   </div>
 
-  <!-- Report Modal -->
-<div id="reportModal" class="modal">
+  <div id="reportModal" class="modal">
   <div class="modal-content">
     <span class="close" onclick="closeModal('reportModal')">&times;</span>
     <div class="modal-header">📊 Sales Report</div>
@@ -297,11 +285,8 @@
 </div>
 
 
-  <!-- Firebase SDK -->
-<!-- include QR library (non-module) -->
-<script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.9.2/lib/qr-code-styling.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.9.2/lib/qr-code-styling.js"></script>
 
-<!-- Firebase + POS logic (module) -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import {
@@ -413,19 +398,23 @@
     const q = query(col, orderBy("order", "asc"));
     const snap = await getDocs(q);
     products = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    // populate selects
-    const itemSelect = document.getElementById("item");
+    
+    // Populate product buttons
+    const buttonContainer = document.getElementById("product-buttons");
     const removeSelect = document.getElementById("removeProduct");
-    if (!itemSelect || !removeSelect) return;
-    itemSelect.innerHTML = "";
+    if (!buttonContainer || !removeSelect) return;
+    
+    buttonContainer.innerHTML = "";
     removeSelect.innerHTML = "";
-    products.forEach(p => {
-      let opt = document.createElement("option");
-      opt.value = p.name;
-      opt.setAttribute("data-price", p.price);
-      opt.textContent = `${p.name} - ₹${p.price}`;
-      itemSelect.appendChild(opt);
 
+    products.forEach(p => {
+      // Create product button
+      let btn = document.createElement("button");
+      btn.textContent = p.name;
+      btn.onclick = () => addItemToBill(p.name, p.price);
+      buttonContainer.appendChild(btn);
+
+      // Populate remove product dropdown
       let opt2 = document.createElement("option");
       opt2.value = p.name;
       opt2.textContent = p.name;
@@ -493,14 +482,12 @@
   window.moveProductDown = moveProductDown;
 
   // ================= Bill number counter =================
-  // We'll use a single doc 'counters/billCounter' with fields: lastNumber (int), lastDate (yyyy-mm-dd)
   const counterDocRef = doc(db, "counters", "billCounter");
 
   async function loadBillCounter() {
     try {
       const snap = await getDoc(counterDocRef);
       if (!snap.exists()) {
-        // initialize
         await setDoc(counterDocRef, { lastNumber: 0, lastDate: "" });
         billNo = 1;
       } else {
@@ -521,35 +508,42 @@
     if (billDateEl) billDateEl.innerText = formatDate(today);
   }
 
-  // update counter after saving a sale
   async function updateBillCounterAfterSaving(number) {
     await setDoc(counterDocRef, { lastNumber: number, lastDate: todayStr }, { merge: true });
   }
 
   // ================= Items add & print =================
-  function addItem() {
-    const itemSelect = document.getElementById("item");
-    if (!itemSelect) return;
-    const itemName = itemSelect.value;
-    const price = parseFloat(itemSelect.options[itemSelect.selectedIndex].getAttribute("data-price") || 0);
-    const qty = parseInt(document.getElementById("qty").value || "1");
+  function addItemToBill(itemName, price) {
+    const qty = 1;
     const lineTotal = price * qty;
 
     const table = document.getElementById("bill");
-    const row = table.insertRow();
-    row.insertCell(0).innerText = itemName;
-    row.insertCell(1).innerText = qty;
-    row.insertCell(2).innerText = price;
-    row.insertCell(3).innerText = lineTotal;
+    const rows = Array.from(table.rows).slice(1);
+    const existingRow = rows.find(row => row.cells[0] && row.cells[0].innerText === itemName);
+
+    if (existingRow) {
+        let currentQty = parseInt(existingRow.cells[1].innerText);
+        let newQty = currentQty + 1;
+        existingRow.cells[1].innerText = newQty;
+        existingRow.cells[3].innerText = (price * newQty).toFixed(2);
+    } else {
+        const row = table.insertRow();
+        row.insertCell(0).innerText = itemName;
+        row.insertCell(1).innerText = qty;
+        row.insertCell(2).innerText = price.toFixed(2);
+        row.insertCell(3).innerText = lineTotal.toFixed(2);
+    }
 
     total += lineTotal;
     document.getElementById("grandTotal").innerText = "Grand Total: " + total.toFixed(2) + " ₹";
     updateQR();
   }
-  window.addItem = addItem;
 
   async function printBill() {
-    // compute fresh bill number from counter before print (in case another device incremented)
+    if (total <= 0) {
+        alert("বিলে কোনো আইটেম যোগ করা হয়নি।");
+        return;
+    }
     try {
       const snap = await getDoc(counterDocRef);
       if (!snap.exists()) {
@@ -560,7 +554,6 @@
         if (data.lastDate === todayStr) billNo = data.lastNumber + 1;
         else billNo = 1;
       }
-      // show current bill number on UI immediately
       const billNoEl = document.getElementById("billNo");
       if (billNoEl) billNoEl.innerText = formatBillNo(billNo);
 
@@ -568,15 +561,12 @@
       console.error("error getting counter before print:", e);
     }
 
-    // Trigger print
     window.print();
 
-    // After print: save sale and increment counter
     window.onafterprint = async () => {
       try {
-        // collect bill items from table
         const table = document.getElementById("bill");
-        const rows = Array.from(table.rows).slice(1); // skip header
+        const rows = Array.from(table.rows).slice(1);
         const items = rows.map(r => ({
           name: r.cells[0].innerText,
           qty: parseInt(r.cells[1].innerText || "0"),
@@ -584,7 +574,6 @@
           total: parseFloat(r.cells[3].innerText || "0")
         }));
 
-        // Save sale doc
         await addDoc(collection(db, "salesHistory"), {
           date: todayStr,
           billNo: formatBillNo(billNo),
@@ -593,17 +582,13 @@
           createdAt: new Date().toISOString()
         });
 
-        // update counter
         await updateBillCounterAfterSaving(billNo);
-
-        // prepare for next bill
         billNo = billNo + 1;
         const billNoEl = document.getElementById("billNo");
         if (billNoEl) billNoEl.innerText = formatBillNo(billNo);
 
-        // clear table & totals
         document.getElementById("bill").innerHTML =
-          '<tr><th>Item</th><th>Qty</th><th>Rate</th><th>Total</th></tr>';
+          '<tr><th>ITEM</th><th>QTY</th><th>RATE</th><th>TOTAL</th></tr>';
         total = 0;
         document.getElementById("grandTotal").innerText = 'Grand Total: 0 ₹';
         updateQR();
@@ -616,6 +601,43 @@
   }
   window.printBill = printBill;
 
+  async function nextBill() {
+      if (!confirm("আপনি কি এই বিলটি বাতিল করে পরের বিলে যেতে চান?")) {
+        return;
+      }
+      try {
+        const snap = await getDoc(counterDocRef);
+        let currentBillNo = 0;
+        if (!snap.exists()) {
+          await setDoc(counterDocRef, { lastNumber: 0, lastDate: "" });
+          currentBillNo = 1;
+        } else {
+          const data = snap.data();
+          if (data.lastDate === todayStr) {
+            currentBillNo = data.lastNumber + 1;
+          } else {
+            currentBillNo = 1;
+          }
+        }
+        await updateBillCounterAfterSaving(currentBillNo);
+
+        billNo = currentBillNo + 1;
+        const billNoEl = document.getElementById("billNo");
+        if (billNoEl) billNoEl.innerText = formatBillNo(billNo);
+
+        document.getElementById("bill").innerHTML =
+          '<tr><th>ITEM</th><th>QTY</th><th>RATE</th><th>TOTAL</th></tr>';
+        total = 0;
+        document.getElementById("grandTotal").innerText = 'Grand Total: 0 ₹';
+        updateQR();
+
+      } catch (e) {
+        console.error("Error skipping to next bill:", e);
+        alert("পরের বিলে যেতে সমস্যা হয়েছে।");
+      }
+  }
+  window.nextBill = nextBill;
+
   // ================= Reports =================
   async function showReportData(data, title) {
     let result = document.getElementById("reportResult");
@@ -625,57 +647,66 @@
     if (data.length === 0) {
       html += "<p>No data found</p>";
     } else {
-      html += `<p><b>Total Sale: ₹${totalSale}</b></p>`;
+      html += `<p><b>Total Sale: ₹${totalSale.toFixed(2)}</b></p>`;
       html += "<table border='1' width='100%' style='border-collapse:collapse;'><tr><th>Date</th><th>Bill No</th><th>Amount</th></tr>";
       data.forEach(h => {
-        html += `<tr><td>${h.date}</td><td>${h.billNo}</td><td>₹${h.amount}</td></tr>`;
+        html += `<tr><td>${h.date}</td><td>${h.billNo}</td><td>₹${h.amount.toFixed(2)}</td></tr>`;
       });
       html += "</table>";
     }
     result.innerHTML = html;
   }
   function parseDDMMYYYY(str) {
-  const [day, month, year] = str.split("/").map(Number);
-  return new Date(year, month - 1, day);
-}
+      const [day, month, year] = str.split("/").map(Number);
+      return new Date(year, month - 1, day);
+  }
 
   async function showTodayReport() {
     const col = collection(db, "salesHistory");
-    const snap = await getDocs(col);
-    // filter client-side for today (simple approach)
-    const items = snap.docs.map(d => d.data()).filter(x => x.date === todayStr);
+    const q = query(col, where("date", "==", todayStr));
+    const snap = await getDocs(q);
+    const items = snap.docs.map(d => d.data());
     await showReportData(items, "আজকের রিপোর্ট");
   }
   window.showTodayReport = showTodayReport;
 
   async function showRangeReport() {
-  let from = document.getElementById("fromDate").value;
-  let to = document.getElementById("toDate").value;
-  if (!from || !to) { alert("তারিখ দিন"); return; }
+      let from = document.getElementById("fromDate").value;
+      let to = document.getElementById("toDate").value;
+      if (!from || !to) { alert("তারিখ দিন"); return; }
 
-  const fromDate = new Date(from); // yyyy-mm-dd → Date
-  const toDate = new Date(to);
+      const fromDate = new Date(from);
+      const toDate = new Date(to);
+      toDate.setHours(23, 59, 59, 999); // Include the whole 'to' day
 
-  const col = collection(db, "salesHistory");
-  const snap = await getDocs(col);
+      const col = collection(db, "salesHistory");
+      const snap = await getDocs(col);
 
-  const items = snap.docs.map(d => d.data()).filter(x => {
-    const d = parseDDMMYYYY(x.date); // dd/mm/yyyy → Date
-    return d >= fromDate && d <= toDate;
-  });
+      const items = snap.docs.map(d => d.data()).filter(x => {
+        if (!x.date) return false;
+        const d = parseDDMMYYYY(x.date);
+        return d >= fromDate && d <= toDate;
+      });
+      
+      items.sort((a, b) => {
+        const dateA = parseDDMMYYYY(a.date).getTime();
+        const dateB = parseDDMMYYYY(b.date).getTime();
+        if (dateA !== dateB) return dateA - dateB;
+        return (a.billNo || 0) - (b.billNo || 0);
+      });
 
-  await showReportData(items, `${from} থেকে ${to} রিপোর্ট`);
-}
+      await showReportData(items, `${formatDate(fromDate)} থেকে ${formatDate(toDate)} রিপোর্ট`);
+  }
 
   window.showRangeReport = showRangeReport;
 
   function getTodayStr() {
-  let d = new Date();
-  let day = String(d.getDate()).padStart(2, "0");
-  let month = String(d.getMonth() + 1).padStart(2, "0");
-  let year = d.getFullYear();
-  return `${day}/${month}/${year}`; // dd/mm/yyyy
-}
+      let d = new Date();
+      let day = String(d.getDate()).padStart(2, "0");
+      let month = String(d.getMonth() + 1).padStart(2, "0");
+      let year = d.getFullYear();
+      return `${day}/${month}/${year}`; // dd/mm/yyyy
+  }
 
   // ================= Initialize UI =================
   async function init() {
