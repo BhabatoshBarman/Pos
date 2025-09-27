@@ -214,7 +214,7 @@
 
   <header>
     <h2>🍴 বিরিয়ানি Adda 🍴</h2>
-    <p>Near Bhatri Club, Gangarampur</p>
+    <p>Near Youth Club, Gangarampur</p>
     <p>☎ +91 9064899089 / +91 8759208612 ☎</p>
     <p>Date: <span id="billDate"></span> | Bill No: <span id="billNo"></span></p>
     <hr>
@@ -485,28 +485,30 @@
   const counterDocRef = doc(db, "counters", "billCounter");
 
   async function loadBillCounter() {
-    try {
-      const snap = await getDoc(counterDocRef);
-      if (!snap.exists()) {
-        await setDoc(counterDocRef, { lastNumber: 0, lastDate: "" });
-        billNo = 1;
-      } else {
-        const data = snap.data();
-        if (data.lastDate === todayStr) {
-          billNo = data.lastNumber + 1;
-        } else {
-          billNo = 1;
-        }
-      }
-    } catch (e) {
-      console.error("Error loading counter:", e);
+  try {
+    const snap = await getDoc(counterDocRef);
+    if (!snap.exists()) {
+      await setDoc(counterDocRef, { lastNumber: 0, lastDate: "" });
       billNo = 1;
+    } else {
+      const data = snap.data();
+      if (data.lastDate === todayStr) {
+        billNo = data.lastNumber; // ❌ Don't do +1 here
+      } else {
+        billNo = 0; // New day → start from 0
+      }
     }
-    const billNoEl = document.getElementById("billNo");
-    if (billNoEl) billNoEl.innerText = formatBillNo(billNo);
-    const billDateEl = document.getElementById("billDate");
-    if (billDateEl) billDateEl.innerText = formatDate(today);
+  } catch (e) {
+    console.error("Error loading counter:", e);
+    billNo = 0;
   }
+
+  const billNoEl = document.getElementById("billNo");
+  if (billNoEl) billNoEl.innerText = formatBillNo(billNo + 1); // show next bill no visually
+
+  const billDateEl = document.getElementById("billDate");
+  if (billDateEl) billDateEl.innerText = formatDate(today);
+}
 
   async function updateBillCounterAfterSaving(number) {
     await setDoc(counterDocRef, { lastNumber: number, lastDate: todayStr }, { merge: true });
