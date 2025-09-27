@@ -24,7 +24,7 @@
     header p {
       font-weight: bold;
       margin: 2px 0;
-      font-size: 16px;
+      font-size: 15px;
     }
     hr {
       border: none;
@@ -335,6 +335,14 @@
     let y = date.getFullYear();
     return `${d}/${m}/${y}`;
   }
+  function getTodayStr() {
+      let d = new Date();
+      let day = String(d.getDate()).padStart(2, "0");
+      let month = String(d.getMonth() + 1).padStart(2, "0");
+      let year = d.getFullYear();
+      return `${day}/${month}/${year}`; // dd/mm/yyyy
+  }
+
 
   // Expose UI modal/menu helpers (so existing HTML onclick works)
   function openModal(id) { document.getElementById(id).style.display = "block"; }
@@ -493,7 +501,7 @@
     } else {
       const data = snap.data();
       if (data.lastDate === todayStr) {
-        billNo = data.lastNumber; // ❌ Don't do +1 here
+        billNo = data.lastNumber; 
       } else {
         billNo = 0; // New day → start from 0
       }
@@ -504,7 +512,8 @@
   }
 
   const billNoEl = document.getElementById("billNo");
-  if (billNoEl) billNoEl.innerText = formatBillNo(billNo + 1); // show next bill no visually
+  // Always show the next number visually
+  if (billNoEl) billNoEl.innerText = formatBillNo(billNo + 1); 
 
   const billDateEl = document.getElementById("billDate");
   if (billDateEl) billDateEl.innerText = formatDate(today);
@@ -547,6 +556,7 @@
         return;
     }
     try {
+      // 1. Determine the actual bill number
       const snap = await getDoc(counterDocRef);
       if (!snap.exists()) {
         await setDoc(counterDocRef, { lastNumber: 0, lastDate: "" });
@@ -556,6 +566,8 @@
         if (data.lastDate === todayStr) billNo = data.lastNumber + 1;
         else billNo = 1;
       }
+      
+      // 2. Update the UI to show the final bill number
       const billNoEl = document.getElementById("billNo");
       if (billNoEl) billNoEl.innerText = formatBillNo(billNo);
 
@@ -563,8 +575,10 @@
       console.error("error getting counter before print:", e);
     }
 
+    // 3. Print the bill
     window.print();
 
+    // 4. Save to database and prepare for next bill after printing
     window.onafterprint = async () => {
       try {
         const table = document.getElementById("bill");
@@ -584,7 +598,10 @@
           createdAt: new Date().toISOString()
         });
 
+        // Save the *final* bill number to the counter
         await updateBillCounterAfterSaving(billNo);
+        
+        // Prepare for next bill (increment global state and UI)
         billNo = billNo + 1;
         const billNoEl = document.getElementById("billNo");
         if (billNoEl) billNoEl.innerText = formatBillNo(billNo);
@@ -610,23 +627,29 @@
       try {
         const snap = await getDoc(counterDocRef);
         let currentBillNo = 0;
-        if (!snap.exists()) {
-          await setDoc(counterDocRef, { lastNumber: 0, lastDate: "" });
-          currentBillNo = 1;
-        } else {
+        let billNoToDisplay = 1; // Default for new day
+
+        if (snap.exists()) {
           const data = snap.data();
           if (data.lastDate === todayStr) {
-            currentBillNo = data.lastNumber + 1;
+            currentBillNo = data.lastNumber;
+            billNoToDisplay = currentBillNo + 1; // Show the bill number *after* the last saved one
           } else {
-            currentBillNo = 1;
+            // New day
+            currentBillNo = 0;
+            billNoToDisplay = 1;
           }
         }
-        await updateBillCounterAfterSaving(currentBillNo);
+        
+        // --- MODIFICATION: REMOVED updateBillCounterAfterSaving(currentBillNo); ---
+        // The bill number is NOT saved/reserved here.
 
-        billNo = currentBillNo + 1;
+        // Update the global billNo and UI for the *next* bill
+        billNo = billNoToDisplay; // Update the global variable
         const billNoEl = document.getElementById("billNo");
-        if (billNoEl) billNoEl.innerText = formatBillNo(billNo);
+        if (billNoEl) billNoEl.innerText = formatBillNo(billNo); // Update UI to show the next number
 
+        // Clear the current bill UI
         document.getElementById("bill").innerHTML =
           '<tr><th>ITEM</th><th>QTY</th><th>RATE</th><th>TOTAL</th></tr>';
         total = 0;
@@ -702,13 +725,6 @@
 
   window.showRangeReport = showRangeReport;
 
-  function getTodayStr() {
-      let d = new Date();
-      let day = String(d.getDate()).padStart(2, "0");
-      let month = String(d.getMonth() + 1).padStart(2, "0");
-      let year = d.getFullYear();
-      return `${day}/${month}/${year}`; // dd/mm/yyyy
-  }
 
   // ================= Initialize UI =================
   async function init() {
