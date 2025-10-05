@@ -2,34 +2,49 @@
 <html lang="bn">
 <head>
   <meta charset="UTF-8">
-  <title>POS Bill - বিরিয়ানি Adda</title>
+  <title>POS System - বিরিয়ানি Adda</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body {
+     body {
       font-family: "Noto Sans Bengali", "Segoe UI", Arial, sans-serif;
       margin: 0;
       padding: 10px;
       font-size: 14px;
-      color: #000;
-      background: #fdfdfd;
+      color: #333; /* Darker text for modern contrast */
+      background: #f0f2f5; /* Light gray/off-white modern background */
+      box-sizing: border-box;
+      transition: background 0.3s ease;
     }
-    header, footer {
+    header {
+      background: linear-gradient(to right, #ff0000, #fbff00, #01cb01);
+      text-align: center;
+    }
+    footer {
       text-align: center;
     }
     header h2 {
       margin: 0;
-      font-size: 26px;
-      font-weight: bold;
+      font-size: 36px; /* Slightly larger */
+      font-weight: 700;
+      color: #ef3400; /* Retaining the theme color */
+      text-shadow: 0px 5px 8px rgb(255, 255, 255); /* Subtle shadow for depth */
+      stroke-width: 5px #ffffff;
     }
+    
     header p {
-      font-weight: bold;
+      font-weight: 500;
       margin: 2px 0;
-      font-size: 16px;
+      font-size: 18px;
+      color: #000be4;
+      font-weight: bold;
+      text-shadow: 0px 5px 8px rgb(255, 255, 255);
+      stroke-width: 5px #ffffff;
     }
+    
     hr {
       border: none;
-      border-top: 2px dashed #000000;
-      margin: 5px 0;
+      border-bottom: 2px dashed #000000;
+      margin: 0;
     }
 
     /* Settings */
@@ -54,6 +69,7 @@
       border-radius: 6px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.15);
       z-index: 100;
+      min-width: 150px;
     }
     .dropdown a {
       display: block;
@@ -66,7 +82,7 @@
       background: #f1f1f1;
     }
 
-    /* Controls */
+    /* Controls (Used only in modals now) */
     .controls {
       display: flex;
       flex-wrap: wrap;
@@ -75,29 +91,156 @@
       align-items: center;
       justify-content: center;
     }
-    select, input {
-      padding: 5px;
+    select, input[type="text"], input[type="number"], input[type="date"], input[type="file"] {
+      padding: 8px;
       font-size: 14px;
       border: 1px solid #ccc;
       border-radius: 5px;
       min-width: 100px;
+      width: 90%;
+      box-sizing: border-box;
     }
     button {
       background: #008e18;
       color: white;
       border: none;
-      padding: 8px 12px;
-      border-radius: 6px;
+      padding: 10px 15px; /* More comfortable padding */
+      border-radius: 8px; /* Softer rounded corners */
       cursor: pointer;
-      font-size: 14px;
+      font-size: 15px;
+      font-weight: bold;
+      transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1); /* Smooth, 'pop' transition */
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Modern shadow for lift */
+      text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+    }
+    button:hover {
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Deeper shadow on hover */
+      transform: translateY(-2px); /* Slight lift for 3D effect */
     }
     button:active {
       background: #007314;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3); /* "Press" effect */
+      transform: translateY(1px);
     }
     .controls button {
         background-color: #f0f0f0;
         color: #333;
         border: 1px solid #ccc;
+    }
+
+    /* Input and Select Styling */
+    select, input[type="text"], input[type="number"], input[type="date"], input[type="file"] {
+      padding: 10px;
+      font-size: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: #ffffff;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    select:focus, input:focus {
+        border-color: #008e18;
+        box-shadow: 0 0 5px rgba(0, 142, 24, 0.3);
+        outline: none;
+    }
+    
+    /* --- NEW 3-COLUMN POS LAYOUT STYLES --- */
+    #main-pos-screen {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+      height: calc(120vh - 160px); 
+    }
+
+    /* LEFT SIDE: CATEGORIES */
+    #category-panel {
+      flex: 1; 
+      max-width: 150px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow-y: auto;
+      border: 2px solid #ffffff;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 10px #333;
+      background: #fdbcf3;
+    }
+    #category-panel button {
+      background: #ffefc2;
+      color: #333;
+      font-weight: bold;
+    }
+    #category-panel button:hover {
+      background: #67d7ff;
+    }
+    #category-panel button.active {
+      background-color: #008e18;
+      color: white;
+    }
+
+    /* MIDDLE SIDE: PRODUCT GRID (Visual Menu) */
+    #product-grid {
+      flex: 3; 
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      overflow-y: auto;
+      padding: 10px;
+      border: 1px solid #eee;
+      border-radius: 8px;
+    }
+    /* Style for product buttons to look like visual tiles */
+    #product-grid button {
+      width: 120px;
+      height: 120px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 5px;
+      background-color: #ffffff; 
+      color: #333;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: bold;
+      line-height: 1.2;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    #product-grid button:hover {
+        border-color: #008e18;
+        box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+        transform: scale(1.03); /* Subtle zoom/lift effect */
+    }
+    #product-grid button:active {
+        background-color: #f0f0f0;
+        transform: scale(0.98); /* Press down effect */
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    /* Icon and Image Styling */
+    #product-grid button .icon {
+        font-size: 36px; /* Larger icon */
+        margin-bottom: 3px;
+    }
+    #product-grid button img {
+        width: 90px;
+        height: 90px;
+        object-fit: cover;
+        border-radius: 8px; /* Rounded image corners */
+        margin-bottom: 3px;
+    }
+
+
+    /* RIGHT SIDE: BILLING PANEL */
+    #billing-panel {
+      flex: 2; 
+      max-width: 350px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid #3300ff;
+      border-radius: 8px;
+      background: #ffffff;
     }
 
     /* Table */
@@ -106,37 +249,52 @@
       border-collapse: collapse;
       margin-top: 8px;
       font-size: 16px;
-      border-bottom: 1px dashed #000000;
+      
+    }
+    #billing-table-container {
+        flex-grow: 1;
+        overflow-y: auto;
+        
     }
     th, td {
-      
-      padding: 6px;
+      padding: 6px 3px;
       text-align: center;
     }
     th {
-      font-size: 20px;
-      background: #c5c5c5;
+      font-size: 14px;
+      background: #78fdff;
       border-bottom: 1px dashed #000000;
       font-weight: bold;
+      position: sticky;
+      top: 0;
+      z-index: 5;
     }
     #grandTotal {
       text-align: right;
-      margin-top: 8px;
+      margin-top: 10px;
+      padding-top: 5px;
+      border-top: 2px dashed #000000;
+      color: #008e18;
       font-weight: bold;
-      font-size: 18px;
+      font-size: 20px;
     }
 
     .upi-payment {
       text-align: center;
-      margin-top: 12px;
+      margin-top: 10px;
+      padding-top: 10px;
     }
     #upiQR {
-      margin: auto;
-      margin-top: 6px;
+      margin: 6px auto;
+    }
+    
+    /* Footer */
+    footer {
+      background: linear-gradient(to right, #26abfd, #fbff00, #ff1df0);
     }
     footer h3 {
-      font-size: 13px;
-      line-height: 5px;
+      font-size: 16px;
+      line-height: 10px;
     }
     footer p {
       font-size: 13px;
@@ -155,101 +313,232 @@
       left: 0; top: 0;
       width: 100%; height: 100%;
       background: rgba(0,0,0,0.5);
+      padding-top: 5px;
     }
     .modal-content {
-      background: #fff;
-      margin: 10% auto;
-      padding: 15px;
+      background: linear-gradient(to right, #97e7ff, #fbff00);
+      margin: 5% auto;
+      padding: 20px;
       border-radius: 8px;
       width: 90%;
-      max-width: 400px;
+      max-width: 500px;
+      max-height: 80vh; /* Set a maximum height relative to viewport */
+      overflow-y: auto;
     }
     .modal-header {
       font-weight: bold;
-      margin-bottom: 10px;
+      font-size: 1.2em;
+      margin-bottom: 15px;
+      color: #ffffff;
+      stroke: 5px #ffffff ;
+      stroke-width: 2px;
+      background: linear-gradient(to right, #f80e67, #fbff00);
+      border-radius: 8px;
+      padding: 15px;
     }
     .close {
       float: right;
-      font-size: 18px;
+      font-size: 24px;
       cursor: pointer;
     }
+    .modal-content button {
+        margin-top: 10px;
+    }
+    .report-table th, .report-table td {
+        font-size: 12px;
+        padding: 4px;
+        background: #ffffff;
+    }
 
-    /* Print Styles */
+   /* Print Styles */
   @media print {
-    .controls,
-    .controls label,
-    .settings-container,
-    button {
-      display: none !important;
-    }
-    @page {
-      size: 58mm auto;   /* Thermal printer width */
-      margin: 1mm;       /* মার্জিন একদম কম */
-    }
-    body {
-      background: #fff;
-      font-size: 18px;   /* লেখা বড় */
-      line-height: 1.4;  /* স্পষ্ট */
+  .settings-container,
+  #category-panel,
+  #product-grid,
+  button {
+    display: none !important; 
+  }
+
+  body {
+    background: #fff; 
+      line-height: 1.4; 
       margin: 0;
       padding: 0;
     }
-    table th, table td {
-      font-size: 16px;
-      padding: 2px;
-    }
-    footer {
-      margin-bottom: 20mm; /* footer এর নিচে ফাঁকা জায়গা */
-    }
+  @page {
+    size: 58mm auto;   
+    margin: 1mm;       
   }
+
+  header {
+    margin-top: 20px;
+    margin-bottom: 10px;
+  }
+  header h2 {
+      font-size: 26px;
+      color: #000;
+      font-weight: bold;
+  }
+  header p {
+      font-size: 16px;
+      margin: 0;
+      color: #000;
+      font-weight: bold;
+  }
+
+  /* ✅ Ensure Bill content visible */
+  #billing-panel {
+      display: block !important;
+      width: 100% !important;
+      max-width: none !important;
+      padding: 0 !important;
+      border: none !important;
+  }
+
+  #billing-table-container {
+      max-height: none !important; 
+      overflow: visible !important;
+      color: #000;
+  } 
+
+  table {
+      margin-top: 0px;
+      font-size: 14px;
+      color: #000;
+  }
+  table th, table td {
+    font-size: 14px;
+    padding: 2px 0;
+    color: #000000;
+  }
+  table th {
+      background: none;
+      font-size: 16px ;
+      color: #000;
+      font-weight: bold;
+  }
+  #grandTotal {
+      font-size: 16px;
+      border-top: 1px dashed #000;
+      margin-top: 5px;
+      padding-top: 3px;
+      color: #000;
+      font-weight: bold;
+  }
+  .upi-payment {
+      margin: 2px 0 !important;      
+      padding: 0 !important;
+      text-align: center !important;
+      border: none !important;      
+      color: #000;
+  }
+  .upi-payment p {
+      font-size: 16px;
+      font-weight: bold;
+      margin: 0 0 2px 0 !important;
+      line-height: 1.2;
+      color: #000;
+  }
+   #upiQR {
+      display: flex !important;
+      justify-content: center !important; 
+      align-items: center !important;
+      margin: 0 auto 0px auto !important; 
+      color: #000;
+      margin-bottom: 2px;
+  }
+  #upiQR canvas,
+  #upiQR svg {
+      display: block !important;
+      width: 150px !important;
+      height: 150px !important;
+      color: #000;
+  }
+  footer {
+  margin: 5px 0 !important;       
+  padding: 0 !important;
+  text-align: center;
+}
+
+footer h3 {
+  font-size: 16px;
+  margin: 2px 0 !important;
+  line-height: 1.3;   /* enough spacing */
+  color: #000;
+  font-weight: bold;
+}
+
+footer p {
+  font-size: 14px;
+  margin: 1px 0 !important;
+  line-height: 1.2;   /* cleaner line spacing */
+  color: #000;
+  font-weight: normal; /* lighter than h3 */
+}
+
   </style>
 </head>
 <body>
   <div class="settings-container">
     <button class="settings-btn" onclick="toggleDropdown()">⚙️</button>
     <div class="dropdown" id="settingsMenu">
-      <a href="#" onclick="openModal('productModal')">➕Product</a>
-      <a href="#" onclick="openModal('reportModal')">📊Report</a>
+      <a href="#" onclick="openModal('productModal'); toggleDropdown()">➕ Product/Menu</a>
+      <a href="#" onclick="openModal('reportModal'); toggleDropdown()">📊 Report</a>
     </div>
   </div>
 
   <header>
     <h2>🍴 বিরিয়ানি Adda 🍴</h2>
-    <p>Near Youth Club, Gangarampur</p>
-    <p>☎ +91 9064899089/+91 8759208612 ☎</p>
+    <p>Chak Bhrigu, Balurghat</p>
+    <p>☎ +91 9064899089 / +91 8759208612 ☎</p>
     <p>Date: <span id="billDate"></span> | Bill No: <span id="billNo"></span></p>
     <hr>
   </header>
 
-  <div id="product-buttons" class="controls">
+  <div id="main-pos-screen">
+    
+    <div id="category-panel">
+        <button id="cat-all" class="active" onclick="filterProducts('all')">সব আইটেম</button>
+        <button id="cat-biryani" onclick="filterProducts('🍛 Biryani')">🍛 Biryani</button>
+        <button id="cat-curry" onclick="filterProducts('🍗 Curry')">🍗 Curry</button>
+        <button id="cat-snacks" onclick="filterProducts('🥟 Snacks')">🥟 Snacks</button>
+        <button id="cat-drinks" onclick="filterProducts('🥤 Drinks')">🥤 Drinks</button>
+        <button id="cat-sweets" onclick="filterProducts('🍨 Sweets')">🍨 Sweets</button>
+        <button id="cat-combo" onclick="filterProducts('🥘 Combo')">🥘 Combo</button>
     </div>
 
+    <div id="product-grid">
+        </div>
 
-  <table id="bill">
-    <tr>
-      <th>ITEM</th>
-      <th>QTY</th>
-      <th>RATE</th>
-      <th>TOTAL</th>
-    </tr>
-  </table>
+    <div id="billing-panel">
+      <div id="billing-table-container">
+        <table id="bill">
+          <tr>
+            <th>ITEM</th>
+            <th>QTY</th>
+            <th>RATE</th>
+            <th>TOTAL</th>
+          </tr>
+        </table>
+      </div>
 
-  <div id="grandTotal">Grand Total: 0 ₹</div>
-  <div style="text-align:center; margin-top: 10px; display: flex; justify-content: center; gap: 10px;">
-    <button onclick="printBill()">🖨️ Print Bill</button>
-    <button onclick="nextBill()" style="background-color: #f44336;">Next Bill ➡️</button>
+      <div id="grandTotal">Grand Total: 0 ₹</div>
+      <div style="text-align:center; margin-top: 10px; display: flex; justify-content: space-around; gap: 5px;">
+        <button onclick="printBill()" style="flex-grow: 1;">🖨️ Print Bill</button>
+        <button onclick="nextBill()" style="background-color: #f44336; flex-grow: 1;">Next Bill ➡️</button>
+      </div>
+
+      <div class="upi-payment">
+        <p><b>Pay via UPI</b></p>
+        <div id="upiQR"></div>
+      </div>
+    </div>
   </div>
-
-  <div class="upi-payment">
-    <p><b>Pay via UPI</b></p>
-    <div id="upiQR"></div>
-  </div>
-
   <footer>
     <hr>
     <h3>🙏 ধন্যবাদ, আবার আসবেন 🙏</h3>
     <p>© 2025 বিরিয়ানি Adda</p>
     <h6>✯</h6>
-
   </footer>
 
   <div id="productModal" class="modal">
@@ -257,37 +546,51 @@
       <span class="close" onclick="closeModal('productModal')">&times;</span>
       <div class="modal-header">➕ Product Manager</div>
       <input type="text" id="newProductName" placeholder="Product Name"><br><br>
-      <input type="number" id="newProductPrice" placeholder="Price"><br><br>
-      <button onclick="addNewProduct()">Add Product</button>
-      <hr>
-      <label>Remove Product:</label>
-      <select id="removeProduct"></select>
-        <button onclick="removeProduct()">❌ Remove</button>
-        <button onclick="moveProductUp()">⬆️ Up</button>
-        <button onclick="moveProductDown()">⬇️ Down</button>
+      
+      <select id="newProductCategorySelect" style="width: 90%;">
+          </select><br><br>
 
+      <input type="number" id="newProductPrice" placeholder="Price (₹)"><br><br>
+      
+      <label for="newProductPhotoFile" style="display: block; font-weight: bold; margin-bottom: 5px; width: 90%; margin: 0 auto 5px;">Upload Photo (Will convert to link):</label>
+      <input type="file" id="newProductPhotoFile" accept="image/*" style="width: 90%;"><br>
+      <p id="photoLinkStatus" style="font-size: 12px; color: gray; margin-top: 5px; text-align: center; width: 90%; margin: 5px auto 10px;">No file selected.</p>
+      <input type="hidden" id="newProductPhotoLink" value="">
+
+      <button onclick="addNewProduct()" style="background-color: #008e18; width: 100%;">➕ Add New Product</button>
+      <hr>
+      
+      <label>Manage/Update Product:</label>
+      <select id="editProductSelect" onchange="populateEditFields()" style="width: 90%;">
+        </select>
+      
+      <div style="display:flex; justify-content:space-between; margin-top: 10px;">
+        <button onclick="removeProduct()" style="background-color: #ff9800; flex-grow: 1; margin-right: 5px;">❌ Remove Selected</button>
+        <button onclick="updateProduct()" style="background-color: #2196F3; flex-grow: 1;">📝 Update Selected Product</button>
+      </div>
     </div>
   </div>
-
   <div id="reportModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeModal('reportModal')">&times;</span>
-    <div class="modal-header">📊 Sales Report</div>
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('reportModal')">&times;</span>
+      <div class="modal-header">📊 Sales Report</div>
 
-    <button onclick="showTodayReport()">আজকের রিপোর্ট</button><br><br>
+      <button onclick="showTodayReport()" style="margin-bottom: 10px;">আজকের রিপোর্ট</button><br>
 
-    From: <input type="date" id="fromDate">
-    To: <input type="date" id="toDate">
-    <button onclick="showRangeReport()">Search</button>
+      <label>Date Range:</label><br>
+      From: <input type="date" id="fromDate" style="width: 45%; display: inline-block;">
+      To: <input type="date" id="toDate" style="width: 45%; display: inline-block;"><br>
+      <button onclick="showRangeReport()">Search</button>
 
-    <div id="reportResult" style="margin-top:10px; max-height:200px; overflow:auto;"></div>
+      <div id="reportResult" style="margin-top:15px; max-height:300px; overflow-y:auto; border: 1px solid #ccc; padding: 10px; border-radius: 5px;"></div>
+    </div>
   </div>
-</div>
 
 
   <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.9.2/lib/qr-code-styling.js"></script>
 
 <script type="module">
+  // ================= IMPORT FIREBASE MODULES =================
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import {
     getFirestore,
@@ -304,7 +607,7 @@
     updateDoc
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  // ================= Firebase Config (posbill-739d8) =================
+  // ================= Firebase Config (REPLACE WITH YOUR ACTUAL CONFIG) =================
   const firebaseConfig = {
     apiKey: "AIzaSyD3zbH7JIe6iXg9mxy7YVhoeVTPPQ3B5Ng",
     authDomain: "posbill-739d8.firebaseapp.com",
@@ -319,15 +622,36 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  // ================= Global state =================
+  // ================= Global state and Constants =================
   let total = 0;
   let today = new Date();
   let todayStr = getTodayStr();
-  let billNo = 0; // current shown bill no
-  let products = []; // {id, name, price, order}
+  let billNo = 0; 
+  let products = []; 
   let qr = null;
+  let currentFilter = 'all';
+  let currentProductId = null; // NEW: Tracks the ID of the product being edited
 
-  // Utility
+  const CATEGORIES = [
+    '🍛 Biryani', 
+    '🍗 Curry', 
+    '🥟 Snacks', 
+    '🥤 Drinks', 
+    '🍨 Sweets', 
+    '🥘 Combo'
+  ];
+
+  // ================= Utility Functions =================
+  function getProductIcon(category) {
+    if (category.includes('Biryani')) return '🍛';
+    if (category.includes('Curry')) return '🍗';
+    if (category.includes('Snacks')) return '🥟';
+    if (category.includes('Drinks')) return '🥤';
+    if (category.includes('Sweets')) return '🍨';
+    if (category.includes('Combo')) return '🥘';
+    return '🍽️';
+  }
+
   function formatBillNo(num) { return String(num).padStart(3, '0'); }
   function formatDate(date) {
     let d = String(date.getDate()).padStart(2, '0');
@@ -335,15 +659,25 @@
     let y = date.getFullYear();
     return `${d}/${m}/${y}`;
   }
+  function getTodayStr() {
+      let d = new Date();
+      let day = String(d.getDate()).padStart(2, "0");
+      let month = String(d.getMonth() + 1).padStart(2, "0");
+      let year = d.getFullYear();
+      return `${day}/${month}/${year}`; 
+  }
+  function parseDDMMYYYY(str) {
+      const [day, month, year] = str.split("/").map(Number);
+      return new Date(year, month - 1, day);
+  }
 
-  // Expose UI modal/menu helpers (so existing HTML onclick works)
+  // Expose UI modal/menu helpers
   function openModal(id) { document.getElementById(id).style.display = "block"; }
   function closeModal(id) { document.getElementById(id).style.display = "none"; }
   function toggleDropdown() {
     let menu = document.getElementById("settingsMenu");
     menu.style.display = menu.style.display === "block" ? "none" : "block";
   }
-  // attach to window for HTML attribute calls
   window.openModal = openModal;
   window.closeModal = closeModal;
   window.toggleDropdown = toggleDropdown;
@@ -352,7 +686,8 @@
   function updateQR() {
     const upiId = "9064899089@ptaxis";
     const payeeName = "Biryani Adda";
-    const upiLink = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(payeeName)}&am=${total}`;
+    const amount = total > 0 ? total.toFixed(2) : '0.01'; 
+    const upiLink = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(payeeName)}&am=${amount}`;
     const container = document.getElementById("upiQR");
     if (!container) return;
     if (!qr) {
@@ -360,9 +695,10 @@
         width: 120,
         height: 120,
         data: upiLink,
-        margin: 0
+        margin: 0,
+        dotsOptions: { color: "#000000" },
+        backgroundOptions: { color: "#ffffff" }
       });
-      // clear existing children then append
       container.innerHTML = "";
       qr.append(container);
     } else {
@@ -370,22 +706,126 @@
     }
   }
 
-  // ================= Products =================
+  // ================= Products & Categories =================
   async function ensureDefaultProductsIfEmpty() {
     const col = collection(db, "products");
     const snap = await getDocs(col);
     if (snap.empty) {
       const defaults = [
-        { name: "চিকেন বিরিয়ানি", price: 90 },
-        { name: "জলের বোতল", price: 10 },
-        { name: "ভেজ চাউমিন", price: 40 },
-        { name: "এগ চাউমিন", price: 50 },
-        { name: "চিকেন চাউমিন", price: 70 },
-        { name: "এগ রোল", price: 30 },
-        { name: "চিকেন রোল", price: 50 },
-        { name: "স্প্রাইট বোতল ২০ml", price: 20 }
+        // 🍛 Biryani
+        { name: "চিকেন বিরিয়ানি", price: 90, category: "🍛 Biryani", photoUrl: "" },
+        { name: "মাটন বিরিয়ানি", price: 150, category: "🍛 Biryani", photoUrl: "" },
+        { name: "এগ বিরিয়ানি", price: 70, category: "🍛 Biryani", photoUrl: "" },
+        { name: "ভেজ বিরিয়ানি", price: 80, category: "🍛 Biryani", photoUrl: "" },
+        { name: "হায়দরাবাদি বিরিয়ানি", price: 120, category: "🍛 Biryani", photoUrl: "" },
+        { name: "কলকাতা স্টাইল বিরিয়ানি", price: 100, category: "🍛 Biryani", photoUrl: "" },
+
+        // 🍗 Curry (Veg)
+        { name: "পনির বাটার মাসালা", price: 120, category: "🍗 Curry", photoUrl: "" },
+        { name: "শাহী পনির", price: 130, category: "🍗 Curry", photoUrl: "" },
+        { name: "পালং পনির", price: 110, category: "🍗 Curry", photoUrl: "" },
+        { name: "পনির দো পেঁয়াজা", price: 120, category: "🍗 Curry", photoUrl: "" },
+        { name: "মাশরুম কারি", price: 100, category: "🍗 Curry", photoUrl: "" },
+        { name: "মিক্স ভেজ কারি", price: 90, category: "🍗 Curry", photoUrl: "" },
+        { name: "আলু গোবি মাসালা", price: 80, category: "🍗 Curry", photoUrl: "" },
+        { name: "ছোলা মাসালা", price: 70, category: "🍗 Curry", photoUrl: "" },
+        { name: "রাজমা কারি", price: 90, category: "🍗 Curry", photoUrl: "" },
+        { name: "ডাল তড়কা", price: 60, category: "🍗 Curry", photoUrl: "" },
+
+        // 🍗 Curry (Non-Veg)
+        { name: "চিকেন কারি", price: 100, category: "🍗 Curry", photoUrl: "" },
+        { name: "চিকেন বাটার মাসালা", price: 130, category: "🍗 Curry", photoUrl: "" },
+        { name: "চিকেন টিক্কা মাসালা", price: 140, category: "🍗 Curry", photoUrl: "" },
+        { name: "কড়াই চিকেন", price: 120, category: "🍗 Curry", photoUrl: "" },
+        { name: "চিকেন কোরমা", price: 130, category: "🍗 Curry", photoUrl: "" },
+        { name: "মাটন কারি", price: 160, category: "🍗 Curry", photoUrl: "" },
+        { name: "মাটন রগন জোশ", price: 180, category: "🍗 Curry", photoUrl: "" },
+        { name: "ডিম কারি", price: 70, category: "🍗 Curry", photoUrl: "" },
+        { name: "মাছের ঝোল", price: 90, category: "🍗 Curry", photoUrl: "" },
+        { name: "চিংড়ি মাসালা", price: 150, category: "🍗 Curry", photoUrl: "" },
+
+        // 🍗 Curry (Special)
+        { name: "হায়দরাবাদি চিকেন কারি", price: 150, category: "🍗 Curry", photoUrl: "" },
+        { name: "বাঙালি মাছের ঝোল", price: 100, category: "🍗 Curry", photoUrl: "" },
+        { name: "কেরালা স্টাইল চিংড়ি কারি", price: 160, category: "🍗 Curry", photoUrl: "" },
+        { name: "কাশ্মীরি দম আলু", price: 90, category: "🍗 Curry", photoUrl: "" },
+        { name: "কলকাতা স্টাইল চিকেন রেজালা", price: 150, category: "🍗 Curry", photoUrl: "" },
+
+        // 🥟 Snacks (Veg)
+        { name: "সমোसा", price: 20, category: "🥟 Snacks", photoUrl: "" },
+        { name: "সিঙ্গারা", price: 15, category: "🥟 Snacks", photoUrl: "" },
+        { name: "কচুরি", price: 15, category: "🥟 Snacks", photoUrl: "" },
+        { name: "আলুর চপ", price: 15, category: "🥟 Snacks", photoUrl: "" },
+        { name: "বেগুনি", price: 10, category: "🥟 Snacks", photoUrl: "" },
+        { name: "পেঁয়াজি", price: 10, category: "🥟 Snacks", photoUrl: "" },
+        { name: "মুড়ি মিক্সচার", price: 20, category: "🥟 Snacks", photoUrl: "" },
+        { name: "ঘুগনি", price: 25, category: "🥟 Snacks", photoUrl: "" },
+        { name: "ভেজ রোল", price: 40, category: "🥟 Snacks", photoUrl: "" },
+        { name: "চানা ভাজা", price: 20, category: "🥟 Snacks", photoUrl: "" },
+
+        // 🥟 Snacks (Non-Veg)
+        { name: "চিকেন পকোড়া", price: 60, category: "🥟 Snacks", photoUrl: "" },
+        { name: "চিকেন রোল", price: 70, category: "🥟 Snacks", photoUrl: "" },
+        { name: "চিকেন কাটলেট", price: 50, category: "🥟 Snacks", photoUrl: "" },
+        { name: "মাটন কাটলেট", price: 60, category: "🥟 Snacks", photoUrl: "" },
+        { name: "ফিশ ফ্রাই", price: 80, category: "🥟 Snacks", photoUrl: "" },
+        { name: "এগ চপ", price: 25, category: "🥟 Snacks", photoUrl: "" },
+        { name: "এগ রোল", price: 40, category: "🥟 Snacks", photoUrl: "" },
+        { name: "চিংড়ি পাকোড়া", price: 70, category: "🥟 Snacks", photoUrl: "" },
+
+        // 🥟 Snacks (Fastfood)
+        { name: "ভেজ বার্গার", price: 50, category: "🥟 Snacks", photoUrl: "" },
+        { name: "চিকেন বার্গার", price: 70, category: "🥟 Snacks", photoUrl: "" },
+        { name: "স্যান্ডউইচ (ভেজ)", price: 40, category: "🥟 Snacks", photoUrl: "" },
+        { name: "স্যান্ডউইচ (চিকেন)", price: 60, category: "🥟 Snacks", photoUrl: "" },
+        { name: "স্যান্ডউইচ (এগ)", price: 50, category: "🥟 Snacks", photoUrl: "" },
+        { name: "পিজ্জা (ভেজ)", price: 100, category: "🥟 Snacks", photoUrl: "" },
+        { name: "পিজ্জা (চিকেন)", price: 120, category: "🥟 Snacks", photoUrl: "" },
+        { name: "চিকেন মোমো", price: 60, category: "🥟 Snacks", photoUrl: "" },
+        { name: "ভেজ মোমো", price: 50, category: "🥟 Snacks", photoUrl: "" },
+        { name: "ফ্রেঞ্চ ফ্রাই", price: 40, category: "🥟 Snacks", photoUrl: "" },
+
+        // 🥤 Drinks
+        { name: "ঠান্ডা পানীয়", price: 20, category: "🥤 Drinks", photoUrl: "" },
+        { name: "লাচ্ছি (মিষ্টি)", price: 30, category: "🥤 Drinks", photoUrl: "" },
+        { name: "লাচ্ছি (নোনতা)", price: 30, category: "🥤 Drinks", photoUrl: "" },
+        { name: "ফালুদা", price: 60, category: "🥤 Drinks", photoUrl: "" },
+        { name: "দুধ চা", price: 10, category: "🥤 Drinks", photoUrl: "" },
+        { name: "লেবু চা", price: 10, category: "🥤 Drinks", photoUrl: "" },
+        { name: "গ্রিন টি", price: 20, category: "🥤 Drinks", photoUrl: "" },
+        { name: "হট কফি", price: 30, category: "🥤 Drinks", photoUrl: "" },
+        { name: "কোল্ড কফি", price: 40, category: "🥤 Drinks", photoUrl: "" },
+        { name: "মিল্কশেক (ম্যাংগো)", price: 50, category: "🥤 Drinks", photoUrl: "" },
+        { name: "মিল্কশেক (চকোলেট)", price: 60, category: "🥤 Drinks", photoUrl: "" },
+        { name: "মিল্কশেক (স্ট্রবেরি)", price: 60, category: "🥤 Drinks", photoUrl: "" },
+        { name: "ফ্রেশ জুস (কমলা)", price: 40, category: "🥤 Drinks", photoUrl: "" },
+        { name: "ফ্রেশ জুস (আপেল)", price: 50, category: "🥤 Drinks", photoUrl: "" },
+        { name: "ফ্রেশ জুস (আনারস)", price: 50, category: "🥤 Drinks", photoUrl: "" },
+        { name: "ফ্রেশ জুস (তরমুজ)", price: 40, category: "🥤 Drinks", photoUrl: "" },
+
+        // 🍨 Sweets
+        { name: "রসগোল্লা", price: 10, category: "🍨 Sweets", photoUrl: "" },
+        { name: "ল্যাংচা", price: 15, category: "🍨 Sweets", photoUrl: "" },
+        { name: "সন্দেশ", price: 20, category: "🍨 Sweets", photoUrl: "" },
+        { name: "চমচম", price: 20, category: "🍨 Sweets", photoUrl: "" },
+        { name: "কালোজাম", price: 15, category: "🍨 Sweets", photoUrl: "" },
+        { name: "মিষ্টি দই", price: 30, category: "🍨 Sweets", photoUrl: "" },
+        { name: "গুলাব জামুন", price: 20, category: "🍨 Sweets", photoUrl: "" },
+        { name: "ক্ষীর", price: 40, category: "🍨 Sweets", photoUrl: "" },
+        { name: "পায়েস", price: 35, category: "🍨 Sweets", photoUrl: "" },
+
+        // 🥘 Combo
+        { name: "চিকেন বিরিয়ানি + কোলা", price: 110, category: "🥘 Combo", photoUrl: "" },
+        { name: "মাটন বিরিয়ানি + কোলা", price: 170, category: "🥘 Combo", photoUrl: "" },
+        { name: "চিকেন রোল + ঠান্ডা পানীয়", price: 90, category: "🥘 Combo", photoUrl: "" },
+        { name: "ভেজ বার্গার + ফ্রেঞ্চ ফ্রাই + কোলা", price: 120, category: "🥘 Combo", photoUrl: "" },
+        { name: "চিকেন বার্গার + ফ্রেঞ্চ ফ্রাই + কোলা", price: 140, category: "🥘 Combo", photoUrl: "" },
+        { name: "ভেজ মোমো + লাচ্ছি", price: 90, category: "🥘 Combo", photoUrl: "" },
+        { name: "চিকেন মোমো + লাচ্ছি", price: 110, category: "🥘 Combo", photoUrl: "" },
+        { name: "মাছের ঝোল + ভাত + সালাদ", price: 130, category: "🥘 Combo", photoUrl: "" },
+        { name: "ডিম কারি + ভাত + সালাদ", price: 100, category: "🥘 Combo", photoUrl: "" }
       ];
-      // write with order indices
+
       for (let i = 0; i < defaults.length; i++) {
         await addDoc(col, { ...defaults[i], order: i });
       }
@@ -395,93 +835,262 @@
   async function loadProducts() {
     await ensureDefaultProductsIfEmpty();
     const col = collection(db, "products");
-    const q = query(col, orderBy("order", "asc"));
+    // Sort by 'order' which dictates display position
+    const q = query(col, orderBy("order", "asc")); 
     const snap = await getDocs(q);
+    
     products = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     
-    // Populate product buttons
-    const buttonContainer = document.getElementById("product-buttons");
-    const removeSelect = document.getElementById("removeProduct");
-    if (!buttonContainer || !removeSelect) return;
+    renderProductGrid(currentFilter);
+
+    const editSelect = document.getElementById("editProductSelect"); // CHANGED ID
+    if (!editSelect) return;
+    editSelect.innerHTML = '<option value="">-- Select Product to Edit/Remove --</option>'; // ADDED PROMPT
     
-    buttonContainer.innerHTML = "";
-    removeSelect.innerHTML = "";
-
     products.forEach(p => {
-      // Create product button
-      let btn = document.createElement("button");
-      btn.textContent = p.name;
-      btn.onclick = () => addItemToBill(p.name, p.price);
-      buttonContainer.appendChild(btn);
+      let opt = document.createElement("option");
+      opt.value = p.id; // Use ID for edit/update/remove
+      opt.textContent = `${p.name} (${p.category}, ₹${p.price.toFixed(0)})`;
+      editSelect.appendChild(opt);
+    });
+    
+    // Clear fields and state when reloading product list
+    document.getElementById("newProductName").value = "";
+    document.getElementById("newProductCategorySelect").value = "";
+    document.getElementById("newProductPrice").value = "";
+    document.getElementById("newProductPhotoLink").value = "";
+    document.getElementById("newProductPhotoFile").value = "";
+    document.getElementById("photoLinkStatus").innerText = "No file selected.";
+    currentProductId = null; // Clear editing state
+  }
 
-      // Populate remove product dropdown
-      let opt2 = document.createElement("option");
-      opt2.value = p.name;
-      opt2.textContent = p.name;
-      removeSelect.appendChild(opt2);
+  function renderProductGrid(filter) {
+    const productGrid = document.getElementById("product-grid");
+    if (!productGrid) return;
+    
+    productGrid.innerHTML = "";
+    
+    const filteredProducts = filter === 'all' 
+        ? products
+        : products.filter(p => p.category === filter);
+
+    filteredProducts.forEach(p => {
+      let btn = document.createElement("button");
+      btn.onclick = () => addItemToBill(p.name, p.price);
+      
+      let photoDisplay;
+      // If a photoUrl (Data URL) exists, display the image
+      if (p.photoUrl && p.photoUrl.startsWith('data:')) {
+          photoDisplay = `<img src="${p.photoUrl}" alt="${p.name}">`;
+      } else {
+          // Fallback to icon
+          photoDisplay = `<span class="icon">${getProductIcon(p.category)}</span>`;
+      }
+
+      btn.innerHTML = `${photoDisplay}<br>${p.name}<br>(${p.price.toFixed(0)} ₹)`; 
+      productGrid.appendChild(btn);
     });
   }
 
+  function filterProducts(category) {
+    currentFilter = category;
+    renderProductGrid(category);
+
+    document.querySelectorAll('#category-panel button').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    // Dynamically generate ID to find the active button (removing emojis and spaces)
+    const categoryId = `cat-${category.toLowerCase().replace(/[^a-z]/g, '')}`;
+    const activeBtn = document.getElementById(categoryId) || document.getElementById('cat-all');
+    if (activeBtn) activeBtn.classList.add('active');
+  }
+  window.filterProducts = filterProducts;
+
+  // ADDED: Initialize the category dropdown
+  function initDropdowns() {
+    const select = document.getElementById("newProductCategorySelect");
+    if (!select) return;
+    select.innerHTML = '<option value="">-- Select Category --</option>'; 
+
+    CATEGORIES.forEach(cat => {
+      let option = document.createElement("option");
+      option.value = cat;
+      option.textContent = cat;
+      select.appendChild(option);
+    });
+  }
+
+  // NEW FUNCTION: Populates the fields for editing when a product is selected
+  function populateEditFields() {
+    const select = document.getElementById("editProductSelect");
+    const productId = select.value;
+    
+    if (!productId) {
+      document.getElementById("newProductName").value = "";
+      document.getElementById("newProductCategorySelect").value = "";
+      document.getElementById("newProductPrice").value = "";
+      document.getElementById("newProductPhotoLink").value = "";
+      document.getElementById("newProductPhotoFile").value = "";
+      document.getElementById("photoLinkStatus").innerText = "No file selected.";
+      currentProductId = null;
+      return;
+    }
+    
+    const product = products.find(p => p.id === productId);
+    if (product) {
+      currentProductId = product.id; // Set global ID for update function
+      
+      document.getElementById("newProductName").value = product.name;
+      document.getElementById("newProductCategorySelect").value = product.category;
+      document.getElementById("newProductPrice").value = product.price;
+      
+      // Handle photo link/status display
+      document.getElementById("newProductPhotoLink").value = product.photoUrl || "";
+      document.getElementById("newProductPhotoFile").value = ""; // Clear file input
+      document.getElementById("photoLinkStatus").innerText = product.photoUrl ? "Photo link loaded." : "No photo link.";
+    }
+  }
+  window.populateEditFields = populateEditFields;
+
+  // NEW FUNCTION: Updates the selected product in Firebase
+  async function updateProduct() {
+    const select = document.getElementById("editProductSelect");
+    const productId = select.value;
+    
+    if (!productId) {
+        alert("অনুগ্রহ করে আপডেটের জন্য একটি পণ্য নির্বাচন করুন।");
+        return;
+    }
+    
+    let name = document.getElementById("newProductName").value.trim();
+    let category = document.getElementById("newProductCategorySelect").value.trim(); 
+    let price = parseFloat(document.getElementById("newProductPrice").value);
+    let photoUrl = document.getElementById("newProductPhotoLink").value; 
+    
+    // --- Input Validation ---
+    if (!name || isNaN(price) || price <= 0) { 
+        alert("নাম ও সঠিক মূল্য দিন"); 
+        return; 
+    }
+    if (category === "") { 
+        alert("অনুগ্রহ করে একটি ক্যাটাগরি নির্বাচন করুন।"); 
+        return; 
+    }
+
+    // --- DUPLICATE NAME CHECK (Excluding the current product) ---
+    const q = query(collection(db, "products"), where("name", "==", name));
+    const existingSnap = await getDocs(q);
+
+    for (let d of existingSnap.docs) {
+        if (d.id !== productId) {
+            alert("⚠️ এই নামের অন্য একটি পণ্য ইতিমধ্যেই মেনুতে রয়েছে। নাম পরিবর্তন করুন।");
+            return;
+        }
+    }
+    
+    // --- DATABASE OPERATION ---
+    try {
+        const productRef = doc(db, "products", productId);
+        await updateDoc(productRef, { name, category, price, photoUrl }); 
+        
+        alert(`${name} সফলভাবে আপডেট করা হয়েছে।`);
+        await loadProducts();
+        closeModal('productModal'); 
+        
+    } catch (error) {
+        console.error("Error updating product:", error);
+        alert(`❌ পণ্য আপডেট করা সম্ভব হয়নি।:\n${error.message}\nঅনুগ্রহ করে ব্রাউজার কনসোল চেক করুন।`);
+    }
+  }
+  window.updateProduct = updateProduct;
+
+  // EXISTING FUNCTION (with error handling from previous step)
   async function addNewProduct() {
     let name = document.getElementById("newProductName").value.trim();
-    let price = parseInt(document.getElementById("newProductPrice").value);
-    if (!name || !price) { alert("নাম ও মূল্য দিন"); return; }
-    // determine max order
-    let maxOrder = -1;
-    products.forEach(p => { if (typeof p.order === "number" && p.order > maxOrder) maxOrder = p.order; });
-    await addDoc(collection(db, "products"), { name, price, order: maxOrder + 1 });
-    document.getElementById("newProductName").value = "";
-    document.getElementById("newProductPrice").value = "";
-    await loadProducts();
-  }
-
-  async function removeProduct() {
-    let name = document.getElementById("removeProduct").value;
-    if (!name) return;
-    const q = query(collection(db, "products"), where("name", "==", name));
-    const snap = await getDocs(q);
-    if (snap.empty) { alert("Product not found"); return; }
-    // delete all matching (usually one)
-    for (let d of snap.docs) {
-      await deleteDoc(doc(db, "products", d.id));
+    let category = document.getElementById("newProductCategorySelect").value.trim(); 
+    let price = parseFloat(document.getElementById("newProductPrice").value);
+    let photoUrl = document.getElementById("newProductPhotoLink").value; 
+    
+    // --- Input Validation ---
+    if (!name || isNaN(price) || price <= 0) { 
+        alert("নাম ও সঠিক মূল্য দিন"); 
+        return; 
     }
-    await loadProducts();
-  }
+    if (category === "") { 
+        alert("অনুগ্রহ করে একটি ক্যাটাগরি নির্বাচন করুন।"); 
+        return; 
+    }
 
-  // Move up/down by swapping 'order' values
-  async function moveProductUp() {
-    let name = document.getElementById("removeProduct").value;
-    let index = products.findIndex(p => p.name === name);
-    if (index > 0) {
-      const a = products[index];
-      const b = products[index - 1];
-      await updateDoc(doc(db, "products", a.id), { order: b.order });
-      await updateDoc(doc(db, "products", b.id), { order: a.order });
-      await loadProducts();
-      document.getElementById("removeProduct").value = name;
+    const productsRef = collection(db, "products");
+    
+    // --- DUPLICATE NAME CHECK ---
+    const q = query(productsRef, where("name", "==", name));
+    const existingSnap = await getDocs(q);
+
+    if (!existingSnap.empty) {
+        alert("⚠️ এই নামের একটি পণ্য ইতিমধ্যেই মেনুতে রয়েছে।");
+        return; 
+    }
+    
+    // --- DATABASE OPERATION WITH ERROR HANDLING ---
+    try {
+        // Find max order to maintain order when adding new product
+        let maxOrder = products.reduce((max, p) => (typeof p.order === "number" && p.order > max ? p.order : max), -1);
+        
+        // Storing the product document
+        await addDoc(productsRef, { name, category, price, order: maxOrder + 1, photoUrl: photoUrl }); 
+        
+        // Reset fields ONLY on successful save
+        document.getElementById("newProductName").value = "";
+        document.getElementById("newProductCategorySelect").value = "";
+        document.getElementById("newProductPrice").value = "";
+        document.getElementById("newProductPhotoFile").value = ""; 
+        document.getElementById("newProductPhotoLink").value = ""; 
+        document.getElementById("photoLinkStatus").innerText = "No file selected.";
+
+        await loadProducts();
+        closeModal('productModal'); 
+        
+    } catch (error) {
+        // Show an alert if the product fails to save
+        console.error("Error adding product:", error);
+        alert(`❌ পণ্য যোগ করা সম্ভব হয়নি।:\n${error.message}\nঅনুগ্রহ করে ব্রাউজার কনসোল চেক করুন।`);
     }
   }
-
-  async function moveProductDown() {
-    let name = document.getElementById("removeProduct").value;
-    let index = products.findIndex(p => p.name === name);
-    if (index >= 0 && index < products.length - 1) {
-      const a = products[index];
-      const b = products[index + 1];
-      await updateDoc(doc(db, "products", a.id), { order: b.order });
-      await updateDoc(doc(db, "products", b.id), { order: a.order });
-      await loadProducts();
-      document.getElementById("removeProduct").value = name;
-    }
-  }
-
-  // expose product functions to window (so html onclick works)
   window.addNewProduct = addNewProduct;
-  window.removeProduct = removeProduct;
-  window.moveProductUp = moveProductUp;
-  window.moveProductDown = moveProductDown;
 
-  // ================= Bill number counter =================
+  // MODIFIED FUNCTION: Uses Product ID for deletion
+  async function removeProduct() {
+    const select = document.getElementById("editProductSelect"); // CHANGED ID
+    const productId = select.value; // Use ID
+    
+    if (!productId) { 
+        alert("অনুগ্রহ করে সরানোর জন্য একটি পণ্য নির্বাচন করুন।");
+        return; 
+    }
+    
+    // Get the name for confirmation message
+    const productName = select.options[select.selectedIndex].text.split('(')[0].trim();
+    
+    if (!confirm(`আপনি কি নিশ্চিত যে আপনি ${productName} পণ্যটি সরাতে চান?`)) {
+        return;
+    }
+    
+    try {
+        await deleteDoc(doc(db, "products", productId));
+        alert(`${productName} সফলভাবে সরানো হয়েছে।`);
+        await loadProducts();
+        
+    } catch (error) {
+        console.error("Error removing product:", error);
+        alert(`❌ পণ্যটি সরানো সম্ভব হয়নি।:\n${error.message}\nঅনুগ্রহ করে ব্রাউজার কনসোল চেক করুন।`);
+    }
+  }
+  window.removeProduct = removeProduct;
+
+  // REMOVED: moveProductUp and moveProductDown functions
+
+  // ================= Bill number counter (omitted for brevity) =================
   const counterDocRef = doc(db, "counters", "billCounter");
 
   async function loadBillCounter() {
@@ -512,11 +1121,10 @@
     await setDoc(counterDocRef, { lastNumber: number, lastDate: todayStr }, { merge: true });
   }
 
-  // ================= Items add & print =================
+  // ================= Items add & print (omitted for brevity) =================
   function addItemToBill(itemName, price) {
     const qty = 1;
     const lineTotal = price * qty;
-
     const table = document.getElementById("bill");
     const rows = Array.from(table.rows).slice(1);
     const existingRow = rows.find(row => row.cells[0] && row.cells[0].innerText === itemName);
@@ -544,6 +1152,7 @@
         alert("বিলে কোনো আইটেম যোগ করা হয়নি।");
         return;
     }
+
     try {
       const snap = await getDoc(counterDocRef);
       if (!snap.exists()) {
@@ -556,6 +1165,18 @@
       }
       const billNoEl = document.getElementById("billNo");
       if (billNoEl) billNoEl.innerText = formatBillNo(billNo);
+
+      // ✅ ডুপ্লিকেট চেক
+      const q = query(
+        collection(db, "salesHistory"),
+        where("date", "==", todayStr),
+        where("billNo", "==", formatBillNo(billNo))
+      );
+      const existSnap = await getDocs(q);
+      if (!existSnap.empty) {
+        alert("⚠️ এই বিল নাম্বার ইতিমধ্যেই ব্যবহার হয়েছে। অনুগ্রহ করে Next Bill চাপুন।");
+        return; // Stop printing
+      }
 
     } catch (e) {
       console.error("error getting counter before print:", e);
@@ -582,24 +1203,13 @@
           createdAt: new Date().toISOString()
         });
 
-        // বিল নম্বর বাড়ানোর কোডটি এখানে নিষ্ক্রিয় করা হয়েছে
-        // await updateBillCounterAfterSaving(billNo);
-        // billNo = billNo + 1;
-        // const billNoEl = document.getElementById("billNo");
-        // if (billNoEl) billNoEl.innerText = formatBillNo(billNo);
-
-        document.getElementById("bill").innerHTML =
-          '<tr><th>ITEM</th><th>QTY</th><th>RATE</th><th>TOTAL</th></tr>';
-        total = 0;
-        document.getElementById("grandTotal").innerText = 'Grand Total: 0 ₹';
-        updateQR();
-
       } catch (e) {
         console.error("Error saving sale after print:", e);
         alert("Sale save failed. Check console.");
       }
     };
-  }
+}
+
   window.printBill = printBill;
 
   async function nextBill() {
@@ -639,7 +1249,7 @@
   }
   window.nextBill = nextBill;
 
-  // ================= Reports =================
+  // ================= Reports (omitted for brevity) =================
   async function showReportData(data, title) {
     let result = document.getElementById("reportResult");
     if (!result) return;
@@ -649,17 +1259,13 @@
       html += "<p>No data found</p>";
     } else {
       html += `<p><b>Total Sale: ₹${totalSale.toFixed(2)}</b></p>`;
-      html += "<table border='1' width='100%' style='border-collapse:collapse;'><tr><th>Date</th><th>Bill No</th><th>Amount</th></tr>";
+      html += "<table class='report-table' border='1' width='100%' style='border-collapse:collapse;'><tr><th>Date</th><th>Bill No</th><th>Amount</th></tr>";
       data.forEach(h => {
         html += `<tr><td>${h.date}</td><td>${h.billNo}</td><td>₹${h.amount.toFixed(2)}</td></tr>`;
       });
       html += "</table>";
     }
     result.innerHTML = html;
-  }
-  function parseDDMMYYYY(str) {
-      const [day, month, year] = str.split("/").map(Number);
-      return new Date(year, month - 1, day);
   }
 
   async function showTodayReport() {
@@ -678,7 +1284,7 @@
 
       const fromDate = new Date(from);
       const toDate = new Date(to);
-      toDate.setHours(23, 59, 59, 999); // Include the whole 'to' day
+      toDate.setHours(23, 59, 59, 999); 
 
       const col = collection(db, "salesHistory");
       const snap = await getDocs(col);
@@ -698,20 +1304,55 @@
 
       await showReportData(items, `${formatDate(fromDate)} থেকে ${formatDate(toDate)} রিপোর্ট`);
   }
-
   window.showRangeReport = showRangeReport;
 
-  function getTodayStr() {
-      let d = new Date();
-      let day = String(d.getDate()).padStart(2, "0");
-      let month = String(d.getMonth() + 1).padStart(2, "0");
-      let year = d.getFullYear();
-      return `${day}/${month}/${year}`; // dd/mm/yyyy
-  }
 
-  // ================= Initialize UI =================
+  // ================= Initialize UI & Event Listeners =================
+  
+  // ADDED: Listener for photo upload to convert file to Data URL
+  document.addEventListener('DOMContentLoaded', () => {
+    const fileInput = document.getElementById('newProductPhotoFile');
+    const linkInput = document.getElementById('newProductPhotoLink');
+    const statusEl = document.getElementById('photoLinkStatus');
+    
+    if (fileInput) {
+        fileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                if (!file.type.startsWith('image/')) {
+                    alert("Only image files are allowed.");
+                    fileInput.value = '';
+                    linkInput.value = '';
+                    statusEl.innerText = 'Only images allowed.';
+                    statusEl.style.color = 'red';
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    // Store Data URL (Base64 string) as the "link" in the hidden input
+                    linkInput.value = reader.result;
+                    statusEl.innerText = `Photo Ready! (${(file.size / 1024).toFixed(1)} KB)`;
+                    statusEl.style.color = 'green';
+                };
+                reader.onerror = () => {
+                    linkInput.value = '';
+                    statusEl.innerText = 'Error loading file.';
+                    statusEl.style.color = 'red';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                linkInput.value = '';
+                statusEl.innerText = 'No file selected.';
+                statusEl.style.color = 'gray';
+            }
+        });
+    }
+  });
+
+
   async function init() {
     document.getElementById("billDate").innerText = formatDate(today);
+    initDropdowns(); // Initialize category dropdown
     await loadProducts();
     await loadBillCounter();
     updateQR();
