@@ -1184,6 +1184,7 @@ footer p {
 
     window.print();
 
+    // 🔴 MODIFIED SECTION 🔴
     window.onafterprint = async () => {
       try {
         const table = document.getElementById("bill");
@@ -1195,6 +1196,7 @@ footer p {
           total: parseFloat(r.cells[3].innerText || "0")
         }));
 
+        // Step 1: Save the bill to sales history
         await addDoc(collection(db, "salesHistory"), {
           date: todayStr,
           billNo: formatBillNo(billNo),
@@ -1202,6 +1204,10 @@ footer p {
           items,
           createdAt: new Date().toISOString()
         });
+        
+        // 🟢 Step 2: IMMEDIATELY update the bill counter after successful save
+        await updateBillCounterAfterSaving(billNo);
+
 
       } catch (e) {
         console.error("Error saving sale after print:", e);
@@ -1209,7 +1215,6 @@ footer p {
       }
     };
 }
-
   window.printBill = printBill;
 
   async function nextBill() {
